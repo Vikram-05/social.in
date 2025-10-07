@@ -3,6 +3,8 @@ import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 
 function Reel() {
+
+    useEffect(()=>{console.log("reel")},[])
     const navigate = useNavigate();
 
     const [isPlaying, setIsPlaying] = useState(false);

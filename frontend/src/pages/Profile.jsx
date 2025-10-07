@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Footer from '../components/Footer';
+import { useNavigate } from 'react-router-dom';
 
 function Profile() {
+    useEffect(()=>{console.log("Profle")},[])
+    const navigate = useNavigate();
     const posts = [
         { id: 1, image: "https://images.pexels.com/photos/3751397/pexels-photo-3751397.jpeg" },
         { id: 2, image: "https://images.pexels.com/photos/158465/waterlily-pink-water-lily-water-plant-158465.jpeg" },
@@ -34,7 +37,7 @@ function Profile() {
                         <div className="flex items-center justify-between mb-4">
                             <h1 className="text-xl font-semibold" style={{ color: 'var(--text-color)' }}>allsesmith</h1>
                            
-                            <button style={{ color: 'var(--text-color)' }}>
+                            <button onClick={()=>navigate("/setting")} style={{ color: 'var(--text-color)' }}>
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
                                 </svg>

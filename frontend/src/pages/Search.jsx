@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import Footer from '../components/Footer';
 
 function Search() {
+    useEffect(()=>{console.log("search")},[])
     const [searchQuery, setSearchQuery] = useState('');
     
     const categories = [

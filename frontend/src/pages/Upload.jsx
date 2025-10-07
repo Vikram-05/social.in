@@ -1,8 +1,11 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef,useEffect } from 'react'
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 
 function Upload() {
+useEffect(()=>{console.log("upload")},[])
+
+
     const navigate = useNavigate()
     const [selectedTab, setSelectedTab] = useState('post');
     const [caption, setCaption] = useState('');
@@ -81,6 +84,7 @@ function Upload() {
     if(disableComments) setDisableComments(false);
     else setDisableComments(true)
  }
+ 
 
     return (
         <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-color)', color: 'var(--text-color)' }}>

@@ -12,6 +12,7 @@ import Upload from '../pages/Upload';
 import Reel from '../pages/Reel';
 import Chats from '../pages/Chats';
 import Notification from '../pages/Notification';
+import Settings from '../pages/Settings';
 
 function AllRoutes() {
   return (
@@ -29,6 +30,7 @@ function AllRoutes() {
           <Route path="/reel" element={<Reel />} />
           <Route path="/chat" element={<Chats />} />
           <Route path="/notification" element={<Notification />} />
+          <Route path="/setting" element={<Settings />} />
         </Routes>
       </SignupProvider>
     </BrowserRouter>
