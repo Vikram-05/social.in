@@ -26,8 +26,8 @@ export const createUser = async (req, res) => {
 
 
         const option = {
-            httpOnly: true,
-            secure: true
+            // httpOnly: true,
+            // secure: true
         };
         return res.status(201).cookie("token", token, option).json({
             message: "User created successfully",
@@ -77,8 +77,8 @@ export const loginUser = async (req, res) => {
         );
 
         const option = {
-            httpOnly: true,
-            secure: true
+            // httpOnly: true,
+            // secure: true
         };
         // Return success response
         return res.status(201).cookie('token', token, option).json({

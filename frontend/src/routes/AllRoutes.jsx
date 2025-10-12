@@ -15,26 +15,30 @@ import Notification from '../pages/Notification';
 import Settings from '../pages/Settings';
 import CategorySearch from '../components/CategorySearch';
 import SearchProfile from '../pages/SearchProfile';
+import Protected from '../components/Protected';
 
 function AllRoutes() {
   return (
     <BrowserRouter>
       <SignupProvider>
         <Routes>
-          <Route path="/" element={<Home />} />
+          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignupEmail />} />
           <Route path="/signup/password" element={<SignupPassword />} />
           <Route path="/signup/username" element={<SignupUserName />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/search-profile/:username" element={<SearchProfile />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/reel" element={<Reel />} />
-          <Route path="/chat" element={<Chats />} />
-          <Route path="/notification" element={<Notification />} />
-          <Route path="/setting" element={<Settings />} />
-          <Route path="/search/category/:name" element={<CategorySearch />} />
+
+          {/* Protected Routes */}
+          <Route path="/" element={<Protected><Home /></Protected>} />
+          <Route path="/profile" element={<Protected><Profile /></Protected>} />
+          <Route path="/search-profile/:username" element={<Protected><SearchProfile /></Protected>} />
+          <Route path="/search" element={<Protected><Search /></Protected>} />
+          <Route path="/upload" element={<Protected><Upload /></Protected>} />
+          <Route path="/reel" element={<Protected><Reel /></Protected>} />
+          <Route path="/chat" element={<Protected><Chats /></Protected>} />
+          <Route path="/notification" element={<Protected><Notification /></Protected>} />
+          <Route path="/setting" element={<Protected><Settings /></Protected>} />
+          <Route path="/search/category/:name" element={<Protected><CategorySearch /></Protected>} />
         </Routes>
       </SignupProvider>
     </BrowserRouter>

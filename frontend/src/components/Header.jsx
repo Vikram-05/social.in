@@ -1,7 +1,7 @@
 import React from 'react'
 import { IoIosNotifications } from "react-icons/io";
 import ThemeToggle from './ThemeToggle';
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 
 function Header() {
@@ -9,9 +9,25 @@ function Header() {
     return (
         <header className="">
             <div className="max-w-3xl mx-auto px-3 py-3 flex justify-between items-center">
-                <h1 onClick={()=>navigate("/")} className="text-2xl font-bold   text-[var(--main-color)]">
-                    social.in
-                </h1>
+                <div className="relative">
+                    <div className="absolute -top-1 -left-1 w-4 h-4 bg-[var(--main-color)] opacity-40 rounded-full animate-pulse-slow"></div>
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-[var(--main-color)] opacity-30 rounded-full animate-ping-slow"></div>
+                    
+                    <h1 
+                        onClick={() => navigate("/")} 
+                        className="text-2xl font-bold text-[var(--text-color)] cursor-pointer relative group"
+                    >
+                        <span className="relative z-10">
+                            social
+                            <span className="text-[var(--button-color)] ">.</span>
+                            in
+                        </span>
+                        
+                        {/* Hover underline effect */}
+                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--main-color)] transition-all duration-300 group-hover:w-full"></span>
+                    </h1>
+                </div>
+                
                 <div className="flex space-x-6">
                     <ThemeToggle />
 
