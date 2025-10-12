@@ -9,7 +9,7 @@ function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault()
-        console.log("email : ",email," password : ",password)
+        console.log("email : ", email, " password : ", password)
         const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`,
             { email, password },
             { withCredentials: true }
@@ -36,6 +36,7 @@ function Login() {
                             Username or Email
                         </label>
                         <input
+                            autoFocus
                             id="username"
                             type="text"
                             required
@@ -55,7 +56,7 @@ function Login() {
                             required
                             onChange={(e) => { setPassword(e.target.value) }}
                             placeholder="Enter your password"
-                            autoComplete= 'true'
+                            autoComplete='true'
                             className="w-full px-4 py-3 rounded-lg  border-gray-600 bg-[var(--semi-text-light-color)] text-[var(--dark-color)]  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border"
                         />
                     </div>

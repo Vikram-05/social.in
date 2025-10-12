@@ -1,10 +1,14 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Footer from '../components/Footer';
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 
 function Search() {
-    useEffect(()=>{console.log("search")},[])
+    useEffect(() => { console.log("search") }, [])
+    const navigate = useNavigate()
     const [searchQuery, setSearchQuery] = useState('');
-    
+    const [suggestedUsers, setSuggestedUsers] = useState([])
+
     const categories = [
         { name: 'IGTV', icon: '📺' },
         { name: 'Shop', icon: '🛍️' },
@@ -16,13 +20,26 @@ function Search() {
         { name: 'Nature', icon: '🌿' }
     ];
 
+    const handleSearchByUsername = async (quary) => {
+
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/getUserByUsername/${quary}`, { withCredentials: true })
+
+            // console.log(response.data.message)
+            setSuggestedUsers(response.data.message)
+        } catch (error) {
+            console.log("Error in handleSearchByUsername  ", error)
+
+        }
+    }
 
 
-    const suggestedUsers = [
-        { username: 'emma_watson', name: 'Emma Watson', image: 'https://images.pexels.com/photos/3751397/pexels-photo-3751397.jpeg' },
-        { username: 'robertdowneyjr', name: 'Robert Downey Jr.', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
-        { username: 'zendaya', name: 'Zendaya', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop' }
-    ];
+
+    // const suggestedUsers = [
+    //     { username: 'emma_watson', name: 'Emma Watson', image: 'https://images.pexels.com/photos/3751397/pexels-photo-3751397.jpeg' },
+    //     { username: 'robertdowneyjr', name: 'Robert Downey Jr.', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
+    //     { username: 'zendaya', name: 'Zendaya', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop' }
+    // ];
 
     const recentSearches = [
         { type: 'user', name: 'taylor_swift', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop' },
@@ -47,10 +64,13 @@ function Search() {
                             type="text"
                             placeholder="Search"
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={(e) => {
+                                const quary = e.target.value
+                                setSearchQuery(quary); handleSearchByUsername(quary)
+                            }}
                             className="w-full pl-10 pr-4 py-3 rounded-lg text-sm"
-                            style={{ 
-                                backgroundColor: 'var(--semi-text-light-color)', 
+                            style={{
+                                backgroundColor: 'var(--semi-text-light-color)',
                                 color: 'var(--dark-color)',
                                 border: 'none',
                                 outline: 'none'
@@ -66,10 +86,38 @@ function Search() {
                     // Search Results
                     <div>
                         <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-color)' }}>Results</h2>
-                        {/* Search results would go here */}
-                        <div className="text-center py-8" style={{ color: 'var(--semi-text-color)' }}>
-                            No results found for "{searchQuery}"
-                        </div>
+                        {
+                            suggestedUsers.length > 0 ?
+                                <div className="mb-8">
+                                    <div className="space-y-3">
+                                        {suggestedUsers.map((user) => (
+                                            <div key={user._id} onClick={() => navigate(`/search-profile/${user.username}`)} className="flex items-center justify-between p-3">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-12 h-12 rounded-full overflow-hidden">
+                                                        <img
+                                                            src={user.profile}
+                                                            alt={user.name}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </div> 
+                                                    <div>
+                                                        <div className="font-semibold" style={{ color: 'var(--text-color)' }}>{user.fullName}</div>
+                                                        <div className="text-sm" style={{ color: 'var(--semi-text-color)' }}>{user.username}</div>
+                                                    </div>
+                                                </div>
+                                                <button className="px-4 py-1 rounded text-sm font-medium"
+                                                    style={{ backgroundColor: 'var(--button-color)', color: 'var(--bg-color)' }}>
+                                                    Follow
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                :
+                                <div className="text-center py-8" style={{ color: 'var(--semi-text-color)' }}>
+                                    No results found for "{searchQuery}"
+                                </div>
+                        }
                     </div>
                 ) : (
                     // Explore Content
@@ -79,9 +127,10 @@ function Search() {
                             <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-color)' }}>Browse Categories</h2>
                             <div className="grid grid-cols-4 gap-3">
                                 {categories.map((category, index) => (
-                                    <div 
+                                    <div
                                         key={index}
-                                        className="aspect-square rounded-lg flex flex-col items-center justify-center p-2 text-center"
+                                        onClick={()=> navigate(`/search/category/${category.name}`)}
+                                        className=" aspect-square rounded-lg flex flex-col items-center justify-center p-2 text-center"
                                         style={{ backgroundColor: 'var(--semi-text-light-color)' }}
                                     >
                                         <span className="text-2xl mb-1">{category.icon}</span>
@@ -93,35 +142,10 @@ function Search() {
                             </div>
                         </div>
 
-                      
+
 
                         {/* Suggested for You */}
-                        <div className="mb-8">
-                            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-color)' }}>Suggested for You</h2>
-                            <div className="space-y-3">
-                                {suggestedUsers.map((user, index) => (
-                                    <div key={index} className="flex items-center justify-between p-3">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-12 h-12 rounded-full overflow-hidden">
-                                                <img 
-                                                    src={user.image} 
-                                                    alt={user.name}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            </div>
-                                            <div>
-                                                <div className="font-semibold" style={{ color: 'var(--text-color)' }}>{user.username}</div>
-                                                <div className="text-sm" style={{ color: 'var(--semi-text-color)' }}>{user.name}</div>
-                                            </div>
-                                        </div>
-                                        <button className="px-4 py-1 rounded text-sm font-medium" 
-                                                style={{ backgroundColor: 'var(--button-color)', color: 'var(--bg-color)' }}>
-                                            Follow
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+
 
                         {/* Recent Searches */}
                         <div>
@@ -135,15 +159,15 @@ function Search() {
                                         <div className="flex items-center space-x-3">
                                             {search.type === 'user' ? (
                                                 <div className="w-10 h-10 rounded-full overflow-hidden">
-                                                    <img 
-                                                        src={search.image} 
+                                                    <img
+                                                        src={search.image}
                                                         alt={search.name}
                                                         className="w-full h-full object-cover"
                                                     />
                                                 </div>
                                             ) : (
                                                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-                                                     style={{ backgroundColor: 'var(--semi-text-light-color)' }}>
+                                                    style={{ backgroundColor: 'var(--semi-text-light-color)' }}>
                                                     {search.icon}
                                                 </div>
                                             )}

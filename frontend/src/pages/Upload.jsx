@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Loader from '../components/Loader';
 
 function Upload() {
     useEffect(() => { console.log("upload") }, [])
@@ -18,6 +19,7 @@ function Upload() {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [hideLikes, setHideLikes] = useState(false);
     const [disableComments, setDisableComments] = useState(false);
+    const [isLoading, setIsLoading] = useState(false)
     const fileInputRef = useRef(null);
     const audioInputRef = useRef(null);
     const coverInputRef = useRef(null);
@@ -85,28 +87,34 @@ function Upload() {
     const handleShare = async () => {
         // alert(`${selectedTab.toUpperCase()} shared successfully!`);
         // console.log("file : ", fileIntoObjectURL)
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/post/newpost`,
-            {
-                "postType": selectedTab,
-                "postImageOrVideoURL": fileIntoObjectURL,
-                "postCaption": caption,
-                "postCategory": selectedCategory,
-                "isLikeHide": hideLikes,
-                "isCommentHide": disableComments
-            },
-            {
-                withCredentials: true
-            }
-        )
-
-        console.log("data => ",response.data)
-
-        
-        setSelectedFiles([]);
-        setCaption('');
-        setAudioFile('');
-        setCoverImage('');
-        setSelectedCategory('');
+        setIsLoading(true)
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/post/newpost`,
+                {
+                    "postType": selectedTab,
+                    "postImageOrVideoURL": fileIntoObjectURL,
+                    "postCaption": caption,
+                    "postCategory": selectedCategory,
+                    "isLikeHide": hideLikes,
+                    "isCommentHide": disableComments
+                },
+                {
+                    withCredentials: true
+                }
+            )
+            // console.log("data => ",response.data)
+            setSelectedFiles([]);
+            setCaption('');
+            setAudioFile('');
+            setCoverImage('');
+            setSelectedCategory('');
+            navigate("/")
+        } catch (error) {
+            console.log("Error in upload profile page", error)
+        }
+        finally {
+            setIsLoading(false)
+        }
     };
 
 
@@ -170,7 +178,7 @@ function Upload() {
                             key={tab}
                             className={`flex-1 py-3 text-center font-medium ${selectedTab === tab ? 'border-b-2' : ''}`}
                             style={{
-                                color: selectedTab === tab ? 'var(--text-color)' : 'var(--semi-text-light-color)',
+                                color: 'var(--text-color)',
                                 borderColor: selectedTab === tab ? 'var(--button-color)' : 'transparent'
                             }}
                             onClick={() => {
@@ -335,7 +343,7 @@ function Upload() {
                             className="w-full px-4 py-3 rounded-lg text-sm resize-none"
                             style={{
                                 backgroundColor: 'var(--semi-text-light-color)',
-                                color: 'var(--text-color)',
+                                color: 'var(--dark-color)',
                                 border: 'none',
                                 outline: 'none'
                             }}
@@ -376,7 +384,7 @@ function Upload() {
                                     key={index}
                                     className={`aspect-square rounded-lg flex flex-col items-center justify-center p-2 text-center transition-all ${selectedCategory === category.name
                                         ? 'border-2 scale-105'
-                                        : 'border border-transparent hover:border-[var(--semi-text-color)]'
+                                        : 'border border-transparent '
                                         }`}
                                     style={{
                                         backgroundColor: selectedCategory === category.name
@@ -387,7 +395,7 @@ function Upload() {
                                             : 'transparent',
                                         color: selectedCategory === category.name
                                             ? 'var(--bg-color)'
-                                            : 'var(--text-color)'
+                                            : 'var(--dark-color)'
                                     }}
                                     onClick={() => setSelectedCategory(
                                         selectedCategory === category.name ? '' : category.name
@@ -437,10 +445,10 @@ function Upload() {
                                 {/* Hide Like Count */}
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <span className="text-sm font-medium block" style={{ color: 'var(--text-color)' }}>
+                                        <span className="text-sm font-medium block" style={{ color: 'var(--dark-color)' }}>
                                             Hide like count
                                         </span>
-                                        <span className="text-xs mt-1 block" style={{ color: 'var(--semi-text-color)' }}>
+                                        <span className="text-xs mt-1 block" style={{ color: 'var(--dark-color)' }}>
                                             Hide the number of likes on this post
                                         </span>
                                     </div>
@@ -469,10 +477,10 @@ function Upload() {
                                 {/* Disable Comments */}
                                 <div className="flex items-center justify-between ">
                                     <div>
-                                        <span className="text-sm font-medium block" style={{ color: 'var(--text-color)' }}>
+                                        <span className="text-sm font-medium block" style={{ color: 'var(--dark-color)' }}>
                                             Turn off commenting
                                         </span>
-                                        <span className="text-xs mt-1 block" style={{ color: 'var(--semi-text-color)' }}>
+                                        <span className="text-xs mt-1 block" style={{ color: 'var(--dark-color)' }}>
                                             No one can comment on this post
                                         </span>
                                     </div>
@@ -538,10 +546,25 @@ function Upload() {
 
                     {/* upload button */}
                     <div className='w-full flex items-center justify-end'>
-                        <button 
-                        onClick={selectedFiles.length > 0 ? handleShare : undefined}
-                        disabled={selectedFiles.length === 0}
-                        className={`px-5 w-full py-2 text-[var(--text-secondry-color)] rounded-md ${selectedFiles.length === 0 ? 'bg-[#de7a3b6b]' : ' bg-[var(--button-color)]' } `}>Upload</button>
+                        <button
+                            onClick={selectedFiles.length > 0 ? handleShare : undefined}
+                            disabled={selectedFiles.length === 0}
+                            className={`px-5 w-full py-2 text-[var(--text-secondry-color)] rounded-md ${selectedFiles.length === 0 ? 'bg-[#de7a3b6b]' : ' bg-[var(--button-color)]'} `}>
+
+                            {
+                                isLoading ?
+                                    <Loader
+                                        screenHeight="h-full"
+                                        screenWidth="w-full"
+                                        height="h-6"
+                                        width="w-6"
+                                        border="border-2"
+                                        borderColor="border-[var(--text-secondry-color)]" />
+                                    :
+
+                                    "Upload"
+                            }
+                        </button>
                     </div>
                 </div>
             </div>

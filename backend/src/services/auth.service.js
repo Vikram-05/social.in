@@ -34,7 +34,15 @@ export const logInService = async (req, res) => {
     const existingUser = await User.findOne({
         $or: [{ email }, { username :email}]
     });
+    
 
+    if (!existingUser) {
+        return res.status(404).json({
+            error: true,
+            success: false,
+            message: "Invalid Email or user"
+        });
+    }
     const isPasswordMatch = await comparePassword(password, existingUser.password)
     if (!isPasswordMatch) {
         return res.status(401).json({
@@ -44,13 +52,6 @@ export const logInService = async (req, res) => {
         });
     }
 
-    if (!existingUser) {
-        return res.status(500).json({
-            error: true,
-            success: false,
-            message: "Invalid Email or user"
-        });
-    }
 
 
     return existingUser;

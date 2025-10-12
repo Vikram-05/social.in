@@ -1,7 +1,7 @@
-function Loader({ screenHeight, screenWidth, height, width }) {
+function Loader({ screenHeight, screenWidth, height, width ,border,borderColor}) {
     return (
         <div className={` flex items-center justify-center ${screenWidth} ${screenHeight}`}>
-            <div className={`border-4 border-[var(--button-color)] border-t-transparent rounded-full animate-spin ${width} ${height}`}></div>
+            <div className={`  ${border} ${borderColor} border-t-transparent rounded-full animate-spin ${width} ${height}`}></div>
         </div>
     );
 }

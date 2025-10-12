@@ -94,7 +94,7 @@ export const loginUser = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error in createUser:", error);
+        console.error("Error in login user:", error);
 
         return res.status(500).json({
             error: true,

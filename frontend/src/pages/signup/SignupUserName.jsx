@@ -2,21 +2,31 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSignup } from "../../context/SignupProvider";
 import axios from 'axios';
+import Loader from '../../components/Loader'
 
 const SignupUserName = () => {
     const navigate = useNavigate();
     const { signupData, setSignupData } = useSignup();
     const [username, setUserName] = useState("");
+    const [isLoading, setIsLoading] = useState(false)
 
 
 
     const handleCreateAccount = async (e) => {
         e.preventDefault();
+        setIsLoading(true)
         setSignupData({ ...signupData, username });
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`,signupData, { withCredentials: true })
-        console.log("data signup -> ", response.data)
+        console.log("signup data", signupData)
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, {...signupData,username}, { withCredentials: true })
+            console.log("data signup -> ", response.data)
 
-        navigate('/')
+            navigate('/')
+        } catch (error) {
+            console.log("Error in signup", error)
+        } finally {
+            setIsLoading(false)
+        }
     }
 
 
@@ -37,6 +47,7 @@ const SignupUserName = () => {
                             User Name
                         </label>
                         <input
+                            autoFocus
                             id="text"
                             type="text"
                             required
@@ -53,7 +64,19 @@ const SignupUserName = () => {
                         type="submit"
                         className="w-full bg-[var(--button-color)] text-white font-semibold py-3 rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200 mt-2"
                     >
-                        Create
+                        {
+                            isLoading
+                                ?
+                                <Loader
+                                    screenHeight="h-full"
+                                    screenWidth="w-full"
+                                    height="h-6"
+                                    width="w-6"
+                                    border="border-3"
+                                    borderColor="border-[var(--text-secondry-colorr)]" />
+                                :
+                                "Create"
+                        }
                     </button>
                 </form>
 

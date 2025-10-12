@@ -13,6 +13,8 @@ import Reel from '../pages/Reel';
 import Chats from '../pages/Chats';
 import Notification from '../pages/Notification';
 import Settings from '../pages/Settings';
+import CategorySearch from '../components/CategorySearch';
+import SearchProfile from '../pages/SearchProfile';
 
 function AllRoutes() {
   return (
@@ -25,12 +27,14 @@ function AllRoutes() {
           <Route path="/signup/password" element={<SignupPassword />} />
           <Route path="/signup/username" element={<SignupUserName />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/search-profile/:username" element={<SearchProfile />} />
           <Route path="/search" element={<Search />} />
           <Route path="/upload" element={<Upload />} />
           <Route path="/reel" element={<Reel />} />
           <Route path="/chat" element={<Chats />} />
           <Route path="/notification" element={<Notification />} />
           <Route path="/setting" element={<Settings />} />
+          <Route path="/search/category/:name" element={<CategorySearch />} />
         </Routes>
       </SignupProvider>
     </BrowserRouter>

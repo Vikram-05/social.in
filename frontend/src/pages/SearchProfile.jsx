@@ -1,13 +1,17 @@
+
+
+
 import React, { act, useEffect, useState, useCallback } from 'react'
 import Footer from '../components/Footer';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
 import Loader from '../components/Loader'
 
-function Profile() {
+function SearchProfile() {
     useEffect(() => { console.log("Profle") }, [])
     useEffect(() => { handlePost() }, [])
     const navigate = useNavigate();
+    const {username} = useParams();
     const [activeTab, setActiveTab] = useState("post")
     const [reel, setReel] = useState([])
     const [post, setPost] = useState([])
@@ -34,11 +38,11 @@ function Profile() {
             }
 
             const responseUserDetails = await axios.get(
-                `${import.meta.env.VITE_BACKEND_URL}/user/getUserById`,
+                `${import.meta.env.VITE_BACKEND_URL}/user/getUserByUsername/${username}`,
                 { withCredentials: true }
             );
-            // console.log("ff ", responseUserDetails.data.message)
-            setUserDetails(responseUserDetails.data.message)
+            // console.log("ff ", responseUserDetails.data.message[0])
+            setUserDetails(responseUserDetails.data.message[0])
 
 
         } catch (error) {
@@ -131,9 +135,9 @@ function Profile() {
 
                 {/* Action Buttons */}
                 <div className="px-3 flex space-x-2 mb-6">
-                    <button onClick={() => navigate("/setting")} className="flex-1 py-2 rounded text-sm font-medium text-center"
+                    <button className="flex-1 py-2 rounded text-sm font-medium text-center"
                         style={{ backgroundColor: 'var(--button-color)', color: 'var(--bg-color)' }}>
-                        Setting
+                        Follow
                     </button>
                     <button className="flex-1 py-2 rounded text-sm font-medium text-center border"
                         style={{ borderColor: 'var(--semi-text-light-color)', color: 'var(--text-color)' }}>
@@ -237,5 +241,4 @@ function Profile() {
         </div>
     )
 }
-
-export default Profile
+export default SearchProfile

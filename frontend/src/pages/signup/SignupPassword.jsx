@@ -24,6 +24,7 @@ function SignupPassword() {
                             Password
                         </label>
                         <input
+                            autoFocus
                             id="password"
                             type="password"
                             required

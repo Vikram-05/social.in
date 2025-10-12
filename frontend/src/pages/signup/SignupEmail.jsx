@@ -33,6 +33,7 @@ function SignupEmail() {
                             Email Address
                         </label>
                         <input
+                            autoFocus
                             id="email"
                             type="email"
                             required
