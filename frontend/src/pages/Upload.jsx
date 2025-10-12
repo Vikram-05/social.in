@@ -1,15 +1,17 @@
-import React, { useState, useRef,useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Upload() {
-useEffect(()=>{console.log("upload")},[])
+    useEffect(() => { console.log("upload") }, [])
 
 
     const navigate = useNavigate()
-    const [selectedTab, setSelectedTab] = useState('post');
+    const [selectedTab, setSelectedTab] = useState('POST');
     const [caption, setCaption] = useState('');
     const [selectedFiles, setSelectedFiles] = useState([]);
+    const [fileIntoObjectURL, setFileIntoObjectURL] = useState("")
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [audioFile, setAudioFile] = useState('');
     const [coverImage, setCoverImage] = useState('');
@@ -36,7 +38,19 @@ useEffect(()=>{console.log("upload")},[])
         if (files.length > 0) {
             setSelectedFiles(files);
         }
+
+        const convertedURL = URL.createObjectURL(files[0])
+        setFileIntoObjectURL(convertedURL)
     };
+
+    useEffect(() => {
+        return () => {
+            if (fileIntoObjectURL) {
+                URL.revokeObjectURL(fileIntoObjectURL);
+            }
+        };
+    }, [fileIntoObjectURL]);
+
 
     const handleAudioSelect = (event) => {
         const file = event.target.files[0];
@@ -68,23 +82,33 @@ useEffect(()=>{console.log("upload")},[])
         setSelectedFiles(prev => prev.filter((_, i) => i !== index));
     };
 
-    const handleShare = () => {
-        // Simulate upload process
-        alert(`${selectedTab.toUpperCase()} shared successfully!`);
-        // Reset form
+    const handleShare = async () => {
+        // alert(`${selectedTab.toUpperCase()} shared successfully!`);
+        // console.log("file : ", fileIntoObjectURL)
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/post/newpost`,
+            {
+                "postType": selectedTab,
+                "postImageOrVideoURL": fileIntoObjectURL,
+                "postCaption": caption,
+                "postCategory": selectedCategory,
+                "isLikeHide": hideLikes,
+                "isCommentHide": disableComments
+            },
+            {
+                withCredentials: true
+            }
+        )
+
+        console.log("data => ",response.data)
+
+        
         setSelectedFiles([]);
         setCaption('');
-        setTaggedPeople('');
         setAudioFile('');
         setCoverImage('');
         setSelectedCategory('');
     };
- const handleComment = () => {
-    // setDisableComments(prev=> !prev)
-    if(disableComments) setDisableComments(false);
-    else setDisableComments(true)
- }
- 
+
 
     return (
         <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-color)', color: 'var(--text-color)' }}>
@@ -135,13 +159,13 @@ useEffect(()=>{console.log("upload")},[])
                         onClick={selectedFiles.length > 0 ? handleShare : undefined}
                         disabled={selectedFiles.length === 0}
                     >
-                        Share
+                        Upload
                     </button>
                 </div>
 
                 {/* Tab Selection */}
                 <div className="flex border-b" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-                    {['post', 'reel', 'story'].map((tab) => (
+                    {['POST', 'REEL', 'STORY'].map((tab) => (
                         <button
                             key={tab}
                             className={`flex-1 py-3 text-center font-medium ${selectedTab === tab ? 'border-b-2' : ''}`}
@@ -474,7 +498,7 @@ useEffect(()=>{console.log("upload")},[])
                                     </label>
                                 </div>
 
-                                
+
                             </div>
                         )}
                     </div>
@@ -511,6 +535,14 @@ useEffect(()=>{console.log("upload")},[])
                             )}
                         </div>
                     )}
+
+                    {/* upload button */}
+                    <div className='w-full flex items-center justify-end'>
+                        <button 
+                        onClick={selectedFiles.length > 0 ? handleShare : undefined}
+                        disabled={selectedFiles.length === 0}
+                        className={`px-5 w-full py-2 text-[var(--text-secondry-color)] rounded-md ${selectedFiles.length === 0 ? 'bg-[#de7a3b6b]' : ' bg-[var(--button-color)]' } `}>Upload</button>
+                    </div>
                 </div>
             </div>
 

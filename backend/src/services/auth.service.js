@@ -28,11 +28,11 @@ export const createUserService = async (req, res) => {
 }
 
 export const logInService = async (req, res) => {
-    const { email, password, username } = req.body;
+    const { email, password} = req.body;
 
 
     const existingUser = await User.findOne({
-        $or: [{ email }, { username }]
+        $or: [{ email }, { username :email}]
     });
 
     const isPasswordMatch = await comparePassword(password, existingUser.password)

@@ -1,11 +1,9 @@
-import React from 'react'
-
-function Loader() {
+function Loader({ screenHeight, screenWidth, height, width }) {
     return (
-        <div class="flex items-center justify-center h-screen">
-            <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className={` flex items-center justify-center ${screenWidth} ${screenHeight}`}>
+            <div className={`border-4 border-[var(--button-color)] border-t-transparent rounded-full animate-spin ${width} ${height}`}></div>
         </div>
-    )
+    );
 }
 
 export default Loader

@@ -55,10 +55,10 @@ export const createUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
     try {
-        const { email, password, username } = req.body;
+        const { email, password } = req.body;
 
         // Validation
-        if (!password && (!email || !username)) {
+        if (!password && !email ) {
             return res.status(400).json({
                 error: true,
                 success: false,

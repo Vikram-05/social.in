@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSignup } from "../../context/SignupProvider";
+import axios from 'axios';
 
-function SignupUserName() {
+const SignupUserName = () => {
     const navigate = useNavigate();
     const { signupData, setSignupData } = useSignup();
-    const [userName, setUserName] = useState("");
+    const [username, setUserName] = useState("");
 
 
-    const handleCreateAccount = (e) => {
+
+    const handleCreateAccount = async (e) => {
         e.preventDefault();
-        setSignupData({ ...signupData, userName });
-        console.log("ss=> ", signupData);
-        navigate('/home')
+        setSignupData({ ...signupData, username });
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`,signupData, { withCredentials: true })
+        console.log("data signup -> ", response.data)
+
+        navigate('/')
     }
 
 
@@ -22,7 +26,7 @@ function SignupUserName() {
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-[var(--text-color)] mb-2">Create account</h1>
-                    <p className="text-[var(--semi-text-light-color)]">Sign up to get started with social.in</p>
+                    <p className="text-[var(--text-color)]">Sign up to get started with social.in</p>
                 </div>
 
                 {/* Form */}
@@ -35,9 +39,10 @@ function SignupUserName() {
                         <input
                             id="text"
                             type="text"
+                            required
                             placeholder="Enter username"
                             onChange={(e) => setUserName(e.target.value)}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-[var(--semi-text-light-color)] text-[var(--text-color)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                             autoComplete='new-password'
                         />
                     </div>
@@ -60,13 +65,13 @@ function SignupUserName() {
                 </div>
 
                 {/* Social Login */}
-                <button className="mt-6 flex items-center justify-center gap-3 w-full border border-gray-600 bg-gray-700 rounded-lg py-3 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200">
+                <button className="mt-6 flex items-center justify-center gap-3 w-full border border-gray-600 bg-[var(--semi-text-light-color)] rounded-lg py-3 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200">
                     <img
                         src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
                         alt="Google"
                         className="w-5 h-5"
                     />
-                    <span className="text-gray-200 font-medium">Continue with Google</span>
+                    <span className="text-[var(--text-color)] font-medium">Continue with Google</span>
                 </button>
 
                 {/* Login link */}

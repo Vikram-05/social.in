@@ -10,7 +10,7 @@ export function SignupProvider({ children }) {
   const [signupData, setSignupData] = useState({
     email: "",
     password: "",
-    userName: "",
+    username: "",
   });
 
   return (

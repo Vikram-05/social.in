@@ -13,7 +13,7 @@ function SignupPassword() {
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-[var(--text-color)] mb-2">Create account</h1>
-                    <p className="text-[var(--semi-text-light-color)]">Sign up to get started with social.in</p>
+                    <p className="text-[var(--text-color)]">Sign up to get started with social.in</p>
                 </div>
 
                 {/* Form */}
@@ -26,9 +26,10 @@ function SignupPassword() {
                         <input
                             id="password"
                             type="password"
+                            required
                             placeholder="Enter your password"
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-[var(--semi-text-light-color)] text-[var(--text-color)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                             autoComplete='new-password'
                         />
                     </div>
@@ -55,13 +56,13 @@ function SignupPassword() {
                 </div>
 
                 {/* Social Login */}
-                <button className="mt-6 flex items-center justify-center gap-3 w-full border border-gray-600 bg-gray-700 rounded-lg py-3 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200">
+                <button className="mt-6 flex items-center justify-center gap-3 w-full border border-gray-600 bg-[var(--semi-text-light-color)] rounded-lg py-3 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200">
                     <img
                         src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
                         alt="Google"
                         className="w-5 h-5"
                     />
-                    <span className="text-gray-200 font-medium">Continue with Google</span>
+                    <span className="text-[var(--text-color)] font-medium">Continue with Google</span>
                 </button>
 
                 {/* Login link */}

@@ -1,4 +1,4 @@
-import { postCreateService } from "../services/post.service.js";
+import { postCreateService, getrandomPostForhomePage } from "../services/post.service.js";
 
 
 export const createPost = async (req, res) => {
@@ -9,23 +9,32 @@ export const createPost = async (req, res) => {
         postCaption,
         postCategory,
         isLikeHide,
-        isCommenteHide
+        isCommentHide
     } = req.body;
 
-    if (!postType || !postImageOrVideoURL ) {
+    if (!postType || !postImageOrVideoURL) {
         return res.status(500).json({ success: false, error: true, message: "All fields required" })
     }
 
     const createdPost = await postCreateService(req, res);
     return res.status(201)
         .json({
-            "postBy": createdPost.postBy,
-            "postType": createdPost.postType,
-            "postImageOrVideoURL": createdPost.postImageOrVideoURL,
-            "postCaption": createdPost.postCaption,
-            "postCategory": createdPost.postCategory,
-            "isLikeHide": createdPost.isLikeHide,
-            "isCommenteHide": createdPost.isCommenteHide
+            success : true,
+            error : false,
+            data : createdPost
+        })
+
+}
+
+
+export const getPosts = async (req, res) => {
+
+    const getRandomPostForHome = await getrandomPostForhomePage(req, res);
+    return res.status(201)
+        .json({
+            success: true,
+            error: false,
+            data: getRandomPostForHome
         })
 
 }

@@ -7,6 +7,10 @@ const PostSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    postByUserName: {
+        type: String,
+        required: true
+    },
     postType: {
         type: String,
         enum: ['REEL', 'STORY', 'POST'],
