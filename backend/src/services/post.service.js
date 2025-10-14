@@ -1,18 +1,21 @@
 import { Like } from "../models/like.model.js";
 import { Post } from "../models/post.model.js";
 import { User } from "../models/user.model.js";
+import { uploadImage } from "./cloudinary.service.js";
 
 export const postCreateService = async (req, res) => {
     try {
         const { id, email } = req.user
         const {
             postType,
-            postImageOrVideoURL,
             postCaption,
             postCategory,
             isLikeHide,
             isCommentHide
         } = req.body;
+
+        const uploadedPost = await uploadImage(req.file?.path)
+        // console.log("fole -. ",req.file)
 
 
         const getUsername = await User.findOne({ "_id": id })
@@ -21,7 +24,7 @@ export const postCreateService = async (req, res) => {
             postBy: id,
             postByUserName: getUsername.username,
             postType,
-            postImageOrVideoURL,
+            postImageOrVideoURL : uploadedPost?.secure_url ,
             postCaption,
             postCategory,
             isLikeHide,
@@ -71,6 +74,18 @@ export const getrandomUserPostForhomePage = async (req, res) => {
         const { postType } = req.body;
 
         const getPost = await Post.find({ "postBy": id, "postType": postType })
+        return getPost;
+    } catch (error) {
+        console.log("Error in getrandomPostForhomePage Post.service.js", error)
+    }
+}
+export const getrandomUserPostByIdForhomePage = async (req, res) => {
+    try {
+        const { postType,id } = req.body;
+
+        // console.log(id,postType)
+        const getPost = await Post.find({ "postBy": id, "postType": postType })
+        // console.log(getPost)
         return getPost;
     } catch (error) {
         console.log("Error in getrandomPostForhomePage Post.service.js", error)

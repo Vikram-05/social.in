@@ -24,14 +24,14 @@ export const updateUserProfileService = async (req, res) => {
     try {
         const { id } = req.user;
         const {username,bio,email,fullName} = req.body; 
-        const uploadedImage = await uploadImage(req.file.path)
+        const uploadedImage = await uploadImage(req.file?.path)
         // console.log("uploaded => ",uploadedImage)
         const userDetails = await User.updateOne({ "_id" : id },{
             username,
             bio,
             email,
             fullName,
-            profile : uploadedImage.secure_url
+            profile : uploadedImage?.secure_url
         });
         return userDetails;
     } catch (error) {

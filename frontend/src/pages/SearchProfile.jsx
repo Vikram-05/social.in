@@ -11,7 +11,7 @@ function SearchProfile() {
     useEffect(() => { console.log("Profle") }, [])
     useEffect(() => { handlePost() }, [])
     const navigate = useNavigate();
-    const {username} = useParams();
+    const { username } = useParams();
     const [activeTab, setActiveTab] = useState("post")
     const [reel, setReel] = useState([])
     const [post, setPost] = useState([])
@@ -26,23 +26,26 @@ function SearchProfile() {
         setActiveTab(type.toLowerCase());
 
         try {
-            const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/post/get-random-post-use-related`,
-                { postType: type },
-                { withCredentials: true }
-            );
-            if (type === "POST") {
-                setPost(response.data.data);
-            } else if (type === "REEL") {
-                setReel(response.data.data);
-            }
+
 
             const responseUserDetails = await axios.get(
                 `${import.meta.env.VITE_BACKEND_URL}/user/getUserByUsername/${username}`,
                 { withCredentials: true }
             );
-            // console.log("ff ", responseUserDetails.data.message[0])
             setUserDetails(responseUserDetails.data.message[0])
+            // console.log("ff ",  responseUserDetails.data.message[0]._id)
+
+            const response = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/post/get-random-post-use-related-byId`,
+                {'id': responseUserDetails.data.message[0]._id , 'postType': type, },
+                { withCredentials: true }
+            );
+            console.log("res",response)
+            if (type === "POST") {
+                setPost(response.data.data);
+            } else if (type === "REEL") {
+                setReel(response.data.data);
+            }
 
 
         } catch (error) {

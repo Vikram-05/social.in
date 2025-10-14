@@ -126,20 +126,20 @@ function Profile() {
                             <div className="px-3 mb-6 ">
                                 <p className="text-sm mb-2" style={{ color: 'var(--semi-text-color)' }}>{userDetails.bio}</p>
                             </div>
+                            <div className="px-3 flex space-x-2 mb-6">
+                                <button onClick={() => navigate("/setting")} className="flex-1 py-2 rounded text-sm font-medium text-center"
+                                    style={{ backgroundColor: 'var(--button-color)', color: 'var(--bg-color)' }}>
+                                    Setting
+                                </button>
+                                <button className="flex-1 py-2 rounded text-sm font-medium text-center border"
+                                    style={{ borderColor: 'var(--semi-text-light-color)', color: 'var(--text-color)' }}>
+                                    Send Message
+                                </button>
+                            </div>
                         </>
                 }
 
                 {/* Action Buttons */}
-                <div className="px-3 flex space-x-2 mb-6">
-                    <button onClick={() => navigate("/setting")} className="flex-1 py-2 rounded text-sm font-medium text-center"
-                        style={{ backgroundColor: 'var(--button-color)', color: 'var(--bg-color)' }}>
-                        Setting
-                    </button>
-                    <button className="flex-1 py-2 rounded text-sm font-medium text-center border"
-                        style={{ borderColor: 'var(--semi-text-light-color)', color: 'var(--text-color)' }}>
-                        Send Message
-                    </button>
-                </div>
 
                 {/* Highlights Stories */}
                 <div className="px-3 mb-3">
@@ -198,13 +198,13 @@ function Profile() {
                             width="w-7"
                             border="border-3"
                             borderColor="border-[var(--button-color)]" /> :
-                        <div className="grid grid-cols-3 gap-1 pb-20">
+                        <div className="grid grid-cols-3  pb-20">
                             {
                                 activeTab == "post" ?
                                     (
 
                                         post.map((post) => (
-                                            <div key={post._id} className="aspect-square bg-gray-700 rounded-none overflow-hidden">
+                                            <div key={post._id} className="aspect-square  bg-gray-700 rounded-none overflow-hidden">
                                                 <img
                                                     src={post.postImageOrVideoURL}
                                                     alt={`Post ${post.postBy}`}

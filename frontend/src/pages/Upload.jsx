@@ -7,7 +7,6 @@ import Loader from '../components/Loader';
 function Upload() {
     useEffect(() => { console.log("upload") }, [])
 
-
     const navigate = useNavigate()
     const [selectedTab, setSelectedTab] = useState('POST');
     const [caption, setCaption] = useState('');
@@ -20,6 +19,7 @@ function Upload() {
     const [hideLikes, setHideLikes] = useState(false);
     const [disableComments, setDisableComments] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
+    const [filePost, setFilePost] = useState("")
     const fileInputRef = useRef(null);
     const audioInputRef = useRef(null);
     const coverInputRef = useRef(null);
@@ -40,6 +40,10 @@ function Upload() {
         if (files.length > 0) {
             setSelectedFiles(files);
         }
+        if (event.target.files[0]) {
+            console.log("file ", event.target.files[0])
+            setFilePost(event.target.files[0])
+        }
 
         const convertedURL = URL.createObjectURL(files[0])
         setFileIntoObjectURL(convertedURL)
@@ -53,18 +57,17 @@ function Upload() {
         };
     }, [fileIntoObjectURL]);
 
-
     const handleAudioSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
-            setAudioFile(file.name);
+            setAudioFile(file);
         }
     };
 
     const handleCoverSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
-            setCoverImage(URL.createObjectURL(file));
+            setCoverImage(file);
         }
     };
 
@@ -85,24 +88,31 @@ function Upload() {
     };
 
     const handleShare = async () => {
-        // alert(`${selectedTab.toUpperCase()} shared successfully!`);
-        // console.log("file : ", fileIntoObjectURL)
         setIsLoading(true)
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/post/newpost`,
+            // Create FormData for file upload
+            const formData = new FormData();
+            
+            // Append all post data
+            formData.append('postType', selectedTab);
+            formData.append('postCaption', caption);
+            formData.append('postCategory', selectedCategory);
+            formData.append('isLikeHide', hideLikes);
+            formData.append('isCommentHide', disableComments);
+            formData.append('postImageOrVideoURL', filePost);
+            
+            const response = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/post/newpost`,
+                formData,
                 {
-                    "postType": selectedTab,
-                    "postImageOrVideoURL": fileIntoObjectURL,
-                    "postCaption": caption,
-                    "postCategory": selectedCategory,
-                    "isLikeHide": hideLikes,
-                    "isCommentHide": disableComments
-                },
-                {
-                    withCredentials: true
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
                 }
             )
-            // console.log("data => ",response.data)
+            
+            console.log("data => ", response.data)
             setSelectedFiles([]);
             setCaption('');
             setAudioFile('');
@@ -117,7 +127,6 @@ function Upload() {
         }
     };
 
-
     return (
         <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-color)', color: 'var(--text-color)' }}>
             {/* Hidden file inputs */}
@@ -125,8 +134,8 @@ function Upload() {
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileSelect}
-                multiple={selectedTab === 'post'}
-                accept={selectedTab === 'post' ? 'image/*,video/*' : selectedTab === 'reel' ? 'video/*' : 'image/*,video/*'}
+                multiple={selectedTab === 'POST'}
+                accept={selectedTab === 'POST' ? 'image/*,video/*' : selectedTab === 'REEL' ? 'video/*' : 'image/*,video/*'}
                 className="hidden"
             />
             <input
@@ -221,7 +230,7 @@ function Upload() {
                             </div>
                         ) : (
                             <>
-                                {selectedTab === 'post' ? (
+                                {selectedTab === 'POST' ? (
                                     <div className="space-y-4">
                                         <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-2xl"
                                             style={{ backgroundColor: 'var(--semi-text-light-color)' }}>
@@ -241,7 +250,7 @@ function Upload() {
                                             Select from device
                                         </button>
                                     </div>
-                                ) : selectedTab === 'reel' ? (
+                                ) : selectedTab === 'REEL' ? (
                                     <div className="space-y-4">
                                         <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-2xl"
                                             style={{ backgroundColor: 'var(--semi-text-light-color)' }}>
@@ -304,7 +313,11 @@ function Upload() {
                                         style={{ backgroundColor: 'var(--semi-text-light-color)' }}
                                     >
                                         <span className="text-sm" style={{ color: 'var(--text-color)' }}>
-                                            {file.type.startsWith('image/') ? '🖼️' : '🎥'}
+                                            {file.type.startsWith('image/') ?
+                                             <img src={fileIntoObjectURL} alt="image"/>
+                                             : 
+                                              <video src={fileIntoObjectURL} alt="image"/>
+                                             }
                                         </span>
                                     </div>
                                     <button
@@ -512,7 +525,7 @@ function Upload() {
                     </div>
 
                     {/* Reel Specific Options */}
-                    {selectedTab === 'reel' && selectedFiles.length > 0 && (
+                    {selectedTab === 'REEL' && selectedFiles.length > 0 && (
                         <div className="space-y-3 p-4 rounded-lg" style={{ backgroundColor: 'var(--semi-text-light-color)' }}>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm" style={{ color: 'var(--text-color)' }}>Add Audio</span>
@@ -520,7 +533,7 @@ function Upload() {
                                     style={{ color: 'var(--button-color)' }}
                                     onClick={triggerAudioInput}
                                 >
-                                    {audioFile ? audioFile : 'Browse'}
+                                    {audioFile ? audioFile.name : 'Browse'}
                                 </button>
                             </div>
                             <div className="flex items-center justify-between">
@@ -538,7 +551,7 @@ function Upload() {
                             </div>
                             {coverImage && (
                                 <div className="mt-2">
-                                    <img src={coverImage} alt="Cover" className="w-20 h-20 object-cover rounded" />
+                                    <img src={URL.createObjectURL(coverImage)} alt="Cover" className="w-20 h-20 object-cover rounded" />
                                 </div>
                             )}
                         </div>
@@ -568,8 +581,6 @@ function Upload() {
                     </div>
                 </div>
             </div>
-
-
 
             <Footer />
         </div>
