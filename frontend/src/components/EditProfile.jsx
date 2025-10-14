@@ -6,28 +6,32 @@ import { useNavigate } from 'react-router-dom';
 export default React.memo(function EditProfile({ profileData, setProfileData }) {
     useEffect(() => { console.log("Edit") }, [])
     const navigate = useNavigate()
-    const [profileImage, setProfileImage] = useState('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face');
+    // const [profileImage, setProfileImage] = useState('https://i/mages.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face');
     const [isProfileUpdate, setIsProfileUploaded] = useState(false)
 
-    //const handleImageUpload = (event) => {
-    //   const file = event.target.files[0];
-    //   if (file) {
-    //     const reader = new FileReader();
-    //     reader.onload = (e) => {
-    //       setProfileImage(e.target.result);
-    //     };
-    //     reader.readAsDataURL(file);
-    //   }
-    // };
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setProfileData({ ...profileData, profile: file })
+            console.log("file ", file)
+        }
+    };
 
     const handleUpdateProfile = async (e) => {
         e.preventDefault()
         setIsProfileUploaded(true)
         try {
-            axios.put(`${import.meta.env.VITE_BACKEND_URL}/user/update-user-data`, profileData, { withCredentials: true })
+            const formData = new FormData()
+            formData.append('username',profileData.username)
+            formData.append('email',profileData.email)
+            formData.append('bio',profileData.bio)
+            formData.append('profile',profileData.profile)
+            formData.append('fullName',profileData.fullName)
+            const res = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/user/update-user-data`, formData, { withCredentials: true })
             navigate("/profile")
+            console.log("aa => ", res)
         } catch (error) {
-            console.log("Error in update profile")
+            console.log("Error in update profile", error)
         }
         finally {
             setIsProfileUploaded(false)
@@ -40,16 +44,22 @@ export default React.memo(function EditProfile({ profileData, setProfileData }) 
             <div className="px-6 py-8 flex flex-col items-center">
                 <div className="relative">
                     <img
-                        src={profileImage}
+                        src={
+                            profileData.profile instanceof File
+                                ? URL.createObjectURL(profileData.profile)
+                                : profileData.profile  
+                        }
                         alt="Profile"
-                        className="w-32 h-32 rounded-full object-cover border-4 border-[var(--button-color)] "
+                        className="w-32 h-32 rounded-full object-cover border-4 border-[var(--button-color)]"
                     />
+
                     <label htmlFor="profileImage" className=" bg-[var(--bg-color)] absolute bottom-0 right-0 p-2  rounded-full text-[var(--text-color)]">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         <input
+                            onChange={(e) => { handleImageUpload(e) }}
                             id="profileImage"
                             type="file"
                             accept="image/*"
@@ -145,12 +155,12 @@ export default React.memo(function EditProfile({ profileData, setProfileData }) 
                     {
                         isProfileUpdate ?
                             <Loader
-                            screenHeight="h-full"
-                            screenWidth="w-full"
-                            height="h-6"
-                            width="w-6" 
-                            border="border-3"
-                            borderColor="border-[var(--text-secondry-color)]"/>
+                                screenHeight="h-full"
+                                screenWidth="w-full"
+                                height="h-6"
+                                width="w-6"
+                                border="border-3"
+                                borderColor="border-[var(--text-secondry-color)]" />
                             :
 
                             "Save Changes"

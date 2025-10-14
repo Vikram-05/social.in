@@ -14,7 +14,8 @@ const Settings = () => {
     "username": "",
     "email": "",
     "bio": "",
-    "fullName": ""
+    "fullName": "",
+    "profile" : ""
   })
 
   const handleGetUserDetails = useCallback(async () => {
@@ -28,7 +29,8 @@ const Settings = () => {
         username: user.username || '',
         email: user.email || '',
         bio: user.bio || '',
-        fullName: user.fullName || ''
+        fullName: user.fullName || '',
+        profile: user.profile || ''
       };
 
       // Check if new data is actually different
@@ -36,7 +38,8 @@ const Settings = () => {
         if (
           prev.username === newProfileData.username &&
           prev.email === newProfileData.email &&
-          prev.bio === newProfileData.bio
+          prev.bio === newProfileData.bio && 
+          prev.profile === newProfileData.profile
         ) return prev;
         return newProfileData;
       });
@@ -62,6 +65,7 @@ const Settings = () => {
       console.log("Error while logout", error)
     }
   };
+  
 
   // const openExternalLink = (url) => {
   //   window.open(url, '_blank');

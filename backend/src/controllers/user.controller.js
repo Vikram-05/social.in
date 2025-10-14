@@ -60,10 +60,10 @@ export const updateUserProfile = async (req, res) => {
     }
     const userDetails = await updateUserProfileService(req, res)
     if(!userDetails){
-        return res.status(200).json({
-        error: false,
-        success: true,
-        message: "Not User found with this Id"
+        return res.status(400).json({
+        error: true,
+        success: false,
+        message: "Error in updating profile"
     })
     }
     return res.status(200).json({

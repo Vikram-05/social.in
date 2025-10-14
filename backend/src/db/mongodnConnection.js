@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-export function connectDB(){
+export function  connectDB(){
     // console.log("db ",process.env.MONGODB_URL)
     mongoose.connect(process.env.MONGODB_URL)
     .then(()=>{
