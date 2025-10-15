@@ -16,6 +16,8 @@ import Settings from '../pages/Settings';
 import CategorySearch from '../components/CategorySearch';
 import SearchProfile from '../pages/SearchProfile';
 import Protected from '../components/Protected';
+import Follower from '../components/Follower';
+import Following from '../components/Following';
 
 function AllRoutes() {
   return (
@@ -39,6 +41,8 @@ function AllRoutes() {
           <Route path="/notification" element={<Protected><Notification /></Protected>} />
           <Route path="/setting" element={<Protected><Settings /></Protected>} />
           <Route path="/search/category/:name" element={<Protected><CategorySearch /></Protected>} />
+          <Route path="/follower" element={<Protected><Follower /></Protected>} />
+          <Route path="/following" element={<Protected><Following /></Protected>} />
         </Routes>
       </SignupProvider>
     </BrowserRouter>

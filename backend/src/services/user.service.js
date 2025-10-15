@@ -13,7 +13,7 @@ export const getUserByIdService = async (req, res) => {
             userDetails.following = NoOfFollow?.following.length || userDetails.following
         }
         await userDetails.save();
-        console.log("dd => ",userDetails)
+        // console.log("dd => ",userDetails)
         return userDetails;
     } catch (error) {
         console.log("error in getUserByIdService in user service.js ",error)
@@ -24,6 +24,16 @@ export const getUserByUsernameService = async (req, res) => {
     try {
         const {username} = req.params
         const userDetails = await User.find({ username :{ $regex: username, $options: 'i' }});
+        return userDetails;
+    } catch (error) {
+        console.log("error in getUserByIdService in user service.js ",error)
+    }
+}
+export const getUserByUserIdService = async (req, res) => {
+    try {
+        const {id} = req.params
+        const userDetails = await User.findById(id)
+        // console.log("user ",userDetails)
         return userDetails;
     } catch (error) {
         console.log("error in getUserByIdService in user service.js ",error)

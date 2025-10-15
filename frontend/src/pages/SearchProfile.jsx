@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
 import Loader from '../components/Loader'
+import { FaChevronLeft } from "react-icons/fa";
 
 function SearchProfile() {
     useEffect(() => { console.log("Profle") }, [])
@@ -18,6 +19,7 @@ function SearchProfile() {
     const [userDetails, setUserDetails] = useState('')
     const [isLoadingPost, setIsLoadingPost] = useState(false)
     const [isLoadingUserDetails, setIsLoadingUserDetails] = useState(false)
+    const [isFollow, setIsfollow] = useState(false)
 
 
     const fetchRandomPosts = useCallback(async (type) => {
@@ -37,15 +39,21 @@ function SearchProfile() {
 
             const response = await axios.post(
                 `${import.meta.env.VITE_BACKEND_URL}/post/get-random-post-use-related-byId`,
-                {'id': responseUserDetails.data.message[0]._id , 'postType': type, },
+                { 'id': responseUserDetails.data.message[0]._id, 'postType': type, },
                 { withCredentials: true }
             );
-            console.log("res",response)
+            // console.log("res",response)
             if (type === "POST") {
                 setPost(response.data.data);
             } else if (type === "REEL") {
                 setReel(response.data.data);
             }
+
+            const isFollowOrNot = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/follow/isFollow/${responseUserDetails.data.message[0]._id}`, {
+                withCredentials: true
+            })
+            setIsfollow(isFollowOrNot.data.message)
+            console.log("ff ", isFollowOrNot)
 
 
         } catch (error) {
@@ -55,6 +63,29 @@ function SearchProfile() {
             setIsLoadingUserDetails(false)
         }
     }, []);
+
+    const handleFollow = async () => {
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/follow/follow-unfollow`, {
+                'followTo': userDetails._id
+            }, {
+                withCredentials: true
+            });
+
+            // Toggle follow state
+            setIsfollow((prev) => !prev);
+
+            // Optionally update follower count in UI
+            setUserDetails((prevDetails) => ({
+                ...prevDetails,
+                followers: isFollow ? prevDetails.followers - 1 : prevDetails.followers + 1
+            }));
+        } catch (error) {
+            console.error("Failed to follow/unfollow:", error);
+        }
+    };
+
+
     const handlePost = (e) => {
         if (e) e.preventDefault();
         fetchRandomPosts("POST");
@@ -72,7 +103,7 @@ function SearchProfile() {
 
 
             {/* Profile Content */}
-            <div className=" max-w-3xl mx-auto  pt-6">
+            <div className=" max-w-3xl mx-auto  pt-4">
                 {
                     isLoadingUserDetails ?
                         <Loader
@@ -84,8 +115,14 @@ function SearchProfile() {
                             borderColor="border-[var(--button-color)]" />
                         :
                         <>
+                            <div className=" px-3 font-semibold mb-4  text-center flex items-center justify-start gap-4" style={{ color: 'var(--text-color)' }}>
+                                <FaChevronLeft onClick={() => navigate(-1)} className='text-xl ' />
+                                <h1 className='text-xl mb-2'>{userDetails.fullName}</h1>
+                            </div>
                             {/* Profile Header */}
                             <div className="px-3 flex items-start space-x-6 mb-2">
+
+
                                 {/* Profile Image */}
                                 <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0">
                                     <img
@@ -98,7 +135,7 @@ function SearchProfile() {
                                 {/* Profile Stats */}
                                 <div className="flex-1 ">
                                     <div className="flex items-center justify-between mb-4">
-                                        <h1 className="text-xl font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.username}</h1>
+                                        <h1 className="text-md font-semibold" style={{ color: 'var(--semi-text-color)' }}>{userDetails.username}</h1>
 
                                         <button onClick={() => navigate("/setting")} style={{ color: 'var(--text-color)' }}>
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,9 +163,10 @@ function SearchProfile() {
                             </div>
 
                             {/* Profile Info fullName */}
-                            <div className="px-3  ">
+                            {/* <div className="px-3  ">
                                 <p className="text-md mb-2 font-semibold " style={{ color: 'var(--semi-text-color) ' }}>{userDetails.fullName}</p>
-                            </div>
+                            </div> */}
+
                             {/* Profile Info bio */}
                             <div className="px-3 mb-6 ">
                                 <p className="text-sm mb-2" style={{ color: 'var(--semi-text-color)' }}>{userDetails.bio}</p>
@@ -138,9 +176,9 @@ function SearchProfile() {
 
                 {/* Action Buttons */}
                 <div className="px-3 flex space-x-2 mb-6">
-                    <button className="flex-1 py-2 rounded text-sm font-medium text-center"
+                    <button onClick={handleFollow} className="flex-1 py-2 rounded text-sm font-medium text-center"
                         style={{ backgroundColor: 'var(--button-color)', color: 'var(--bg-color)' }}>
-                        Follow
+                        {isFollow ? "Unfollow" : "Follow"}
                     </button>
                     <button className="flex-1 py-2 rounded text-sm font-medium text-center border"
                         style={{ borderColor: 'var(--semi-text-light-color)', color: 'var(--text-color)' }}>

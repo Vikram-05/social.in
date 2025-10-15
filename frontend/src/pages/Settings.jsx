@@ -3,6 +3,7 @@ import ThemeToggle from '../components/ThemeToggle'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import EditProfile from '../components/EditProfile';
+import Footer from '../components/Footer';
 
 const Settings = () => {
   useEffect(() => { console.log("Setting") }, [])
@@ -72,7 +73,7 @@ const Settings = () => {
   // };
 
   const SettingsList = () => (
-    <div className="  overflow-hidden flex flex-col gap-3 ">
+    <div className="  overflow-hidden flex flex-col gap-3">
       {/* Edit Profile */}
       <div
         className="px-6 py-2  flex justify-between items-center  transition-colors cursor-pointer"
@@ -183,7 +184,7 @@ const Settings = () => {
 
       {/* Logout */}
       <div
-        className="px-6 py-4 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer text-red-500"
+        className="px-6 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer text-red-500"
         onClick={handleLogout}
       >
         <h3 className="font-medium">Logout</h3>
@@ -197,8 +198,8 @@ const Settings = () => {
 
 
   return (
-    <div className="min-h-screen bg-[var(--bg-color)] transition-colors duration-300">
-      <div className="container mx-auto  py-8 max-w-2xl">
+    <div className=" bg-[var(--bg-color)] transition-colors duration-300  h-[calc(100vh-65px)] overflow-scroll">
+      <div className="container mx-auto  py-2 max-w-2xl">
         {/* Header */}
         <header className="mb-8">
           <div className="px-6 py-2 border-gray-100 dark:border-gray-800 flex items-center">
@@ -236,6 +237,7 @@ const Settings = () => {
 
 
       </div>
+      <Footer />
     </div>
   );
 };

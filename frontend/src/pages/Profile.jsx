@@ -107,11 +107,11 @@ function Profile() {
                                             <div className="text-sm" style={{ color: 'var(--text-color)' }}>posts</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.followers}</div>
+                                            <div onClick={()=> navigate('/follower')} className="font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.followers}</div>
                                             <div className="text-sm" style={{ color: 'var(--text-color)' }}>followers</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.following}</div>
+                                            <div onClick={()=> navigate('/following')} className="font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.following}</div>
                                             <div className="text-sm" style={{ color: 'var(--text-color)' }}>following</div>
                                         </div>
                                     </div>

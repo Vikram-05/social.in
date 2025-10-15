@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { MdVideoLibrary } from "react-icons/md";
 import Loader from './Loader'
 import { useNavigate } from 'react-router-dom'
+import { FaChevronLeft } from "react-icons/fa";
 import { RiArrowLeftWideLine } from "react-icons/ri";
 
 function CategorySearch() {
@@ -42,16 +43,17 @@ function CategorySearch() {
     return (
         <div className="min-h-screen flex flex-col " style={{ backgroundColor: 'var(--bg-color)' }}>
             {/* Header */}
-            <header className=" z-50 pt-8 px-2" style={{ backgroundColor: 'var(--bg-color)' }}>
-                <div className=" mx-auto flex gap-1 mb-3">
+            <header className=" z-50 pt-3 px-2" style={{ backgroundColor: 'var(--bg-color)' }}>
+                <div className=" mx-auto  gap-1 mb-3">
                     <button
                         onClick={() => { navigate(-1) }}
-                        className=" text-gray-500 w-[10%]  rounded-md flex items-center justify-center"
+                        className=" text-gray-500 pb-4 gap-5  rounded-md flex items-center justify-center"
                     >
-                        <RiArrowLeftWideLine className='text-3xl'/>
+                    <FaChevronLeft className='text-xl'/>
+                    <h1 className='font-semibold text-2xl  text-[var(--text-color)]'>Search</h1>
                     </button>
                     {/* Search Bar */}
-                    <div className=" relative  w-[90%] ">
+                    <div className=" relative  w-full">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg className="w-5 h-5" style={{ color: 'var(--dark-color)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

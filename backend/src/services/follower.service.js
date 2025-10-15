@@ -1,67 +1,89 @@
 import { Follow } from '../models/follow.model.js'
+import { User } from '../models/user.model.js';
 
 export const getFollowerService = async (req, res) => {
     try {
         const { id } = req.user;
         const response = await Follow.findOne({ 'user': id })
-        console.log("resp : ", response)
+        return response;
     } catch (error) {
         console.log("Error in getFollowerService", error)
+        return null
     }
 }
 export const FollowUnFollowService = async (req, res) => {
     const { id } = req.user;
     const { followTo } = req.body;
+
     try {
-        const response = await Follow.findOne({ 'user': id })
-        const forFollowing = await Follow.findOne({ 'user': followTo })
-        if (!response) {
-            const followCreated = await Follow.create({ 'user': id })
-            followCreated.following.push(followTo)
-            await followCreated.save();
-            if (!forFollowing) {
-                const followingCreated = await Follow.create({ 'user': followTo })
-                followingCreated.follower.push(id)
-                await followingCreated.save();
-            }
-            return saved;
-        }
-        if (!forFollowing) {
-            const followingCreated = await Follow.create({ 'user': followTo })
-            followingCreated.follower.push(id);
-            response.following.push(followTo)
-            await response.save();
-            const saved = await followingCreated.save();
-            return {saved,response};
+        if (id === followTo) {
+            return res.status(400).json({ message: "You cannot follow yourself." });
         }
 
-        // const isFollow = response.following.includes(followTo)
-        // const isFollowing = forFollowing.follower.includes(id)
-        const indexOfFollower = response.following.indexOf(followTo)
-        const indexOfFollowing = forFollowing.follower.indexOf(id)
-        console.log("aa ",indexOfFollower)
-        if (indexOfFollower == -1) {
-            response.following.push(followTo)
-            await response.save();
-            if (indexOfFollowing == -1) {
-                forFollowing.follower.push(followTo)
-                await forFollowing.save();
-            }
-            return {response,forFollowing};
+        const userWhoFollow = await User.findById(id);
+        const userWhomFollow = await User.findById(followTo);
+
+        if (!userWhoFollow || !userWhomFollow) {
+            return res.status(404).json({ message: "User not found." });
         }
-        if (indexOfFollower == -1) {
-            forFollowing.follower.push(followTo)
-            const saved = await response.save();
-            return saved;
+
+        let followerDoc = await Follow.findOne({ user: id });
+        let followingDoc = await Follow.findOne({ user: followTo });
+
+        
+        if (!followerDoc) {
+            followerDoc = await Follow.create({ user: id, following: [] });
         }
-        // const indexOfFollower = response.following.indexOf(followTo)
-        // const indexOfFollowing = forFollowing.follower.indexOf(id)
-        response.following.splice(indexOfFollower, 1);
-        forFollowing.follower.splice(indexOfFollowing, 1);
-        await response.save();
-        await forFollowing.save();
-        return { response, forFollowing }
+        if (!followingDoc) {
+            followingDoc = await Follow.create({ user: followTo, follower: [] });
+        }
+
+        const isFollowing = followerDoc.following.includes(followTo);
+
+        if (!isFollowing) {
+            // user ko follow
+            followerDoc.following.push(followTo);
+            followingDoc.follower.push(id);
+        } else {
+            // user ko unfollow
+            followerDoc.following = followerDoc.following.filter(uid => uid.toString() !== followTo);
+            followingDoc.follower = followingDoc.follower.filter(uid => uid.toString() !== id);
+        }
+
+        await followerDoc.save();
+        await followingDoc.save();
+
+        //user model me update user count
+        userWhoFollow.following = followerDoc.following.length;
+        userWhomFollow.followers = followingDoc.follower.length;
+
+        await userWhoFollow.save();
+        await userWhomFollow.save();
+
+        return res.status(200).json({
+            message: isFollowing ? "Unfollowed successfully." : "Followed successfully.",
+            followerDoc,
+            followingDoc,
+        });
+
     } catch (error) {
-        console.log("Error in getFollowerService", error)
+        console.error("Error in FollowUnFollowService:", error);
+        return res.status(500).json({ message: "Server error. Please try again later." });
+    }
+};
+
+export const checkIsFollowOrNotService = async (req, res) => {
+    const { id } = req.user;
+    const { checkFor } = req.params;
+    console.log("pa", req)
+    try {
+        const response = await Follow.findOne({ 'user': id });
+        // console.log("re ",response)
+        const isFollow = response.following.includes(checkFor)
+        // console.log("ss ",isFollow,checkFor)
+        return isFollow;
+    } catch (error) {
+        console.log("Error in checkIsFollowOrNot", error);
+        return null
     }
 }
