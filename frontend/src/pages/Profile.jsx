@@ -39,7 +39,7 @@ function Profile() {
             );
             // console.log("ff ", responseUserDetails.data.message)
             setUserDetails(responseUserDetails.data.message)
-
+            console.log("ff",responseUserDetails)
 
         } catch (error) {
             console.error(`Error fetching ${type}:`, error);

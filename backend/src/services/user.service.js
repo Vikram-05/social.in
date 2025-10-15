@@ -1,10 +1,19 @@
 import { User } from "../models/user.model.js";
 import {uploadImage} from './cloudinary.service.js'
+import { Follow } from "../models/follow.model.js";
 
 export const getUserByIdService = async (req, res) => {
     try {
         const { id } = req.user;
+        const NoOfFollow = await Follow.findOne({ "user" : id });
         const userDetails = await User.findOne({ "_id" : id });
+        if(userDetails){
+
+            userDetails.followers = NoOfFollow?.follower.length || userDetails.followers
+            userDetails.following = NoOfFollow?.following.length || userDetails.following
+        }
+        await userDetails.save();
+        console.log("dd => ",userDetails)
         return userDetails;
     } catch (error) {
         console.log("error in getUserByIdService in user service.js ",error)

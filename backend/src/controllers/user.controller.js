@@ -6,7 +6,7 @@ export const getUserById = async (req, res) => {
         return res.status(500).json({
             error: true,
             success: false,
-            message: "Id must be require"
+            message: "Id is required"
         })
     }
     const userDetails = await getUserByIdService(req, res)

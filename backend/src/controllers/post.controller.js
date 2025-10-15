@@ -56,6 +56,8 @@ export const getUserPosts = async (req, res) => {
         })
 
 }
+
+
 export const getUserPostsById = async (req, res) => {
     const {id} = req.body;
     // console.log("pp",id)

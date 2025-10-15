@@ -23,6 +23,7 @@ export const createUser = async (req, res) => {
             process.env.JWT_SECRET_KEY,
             { expiresIn: '1d' }
         );
+        console.log("ppp ",savedUser)
 
 
         const option = {
@@ -38,6 +39,7 @@ export const createUser = async (req, res) => {
                 id: savedUser._id,
                 email: savedUser.email,
                 username: savedUser.username,
+                profile : savedUser.profile
             }
         });
 
