@@ -12,6 +12,7 @@ import Post from './src/routes/post.route.js'
 import User from './src/routes/user.routes.js'
 import Like from './src/routes/like.routes.js'
 import Follow from './src/routes/follow.routes.js'
+import Status from './src/routes/status.routes.js';
 
 const PORT = process.env.PORT || 7000;
 
@@ -35,6 +36,7 @@ app.use('/api/post', Post)
 app.use('/api/user', User)
 app.use('/api/like', Like)
 app.use('/api/follow',Follow)
+app.use('/api/status',Status)
 
 
 // Start server

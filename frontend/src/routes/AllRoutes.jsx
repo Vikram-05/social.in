@@ -18,6 +18,8 @@ import SearchProfile from '../pages/SearchProfile';
 import Protected from '../components/Protected';
 import Follower from '../components/Follower';
 import Following from '../components/Following';
+import UploadStatus from '../components/UploadStatus';
+import SeeStory from '../components/SeeStory';
 
 function AllRoutes() {
   return (
@@ -43,6 +45,8 @@ function AllRoutes() {
           <Route path="/search/category/:name" element={<Protected><CategorySearch /></Protected>} />
           <Route path="/follower" element={<Protected><Follower /></Protected>} />
           <Route path="/following" element={<Protected><Following /></Protected>} />
+          <Route path="/upload-status" element={<Protected><UploadStatus /></Protected>} />
+          <Route path="/see-story" element={<Protected><SeeStory /></Protected>} />
         </Routes>
       </SignupProvider>
     </BrowserRouter>

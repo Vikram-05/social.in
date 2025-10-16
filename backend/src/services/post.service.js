@@ -30,6 +30,10 @@ export const postCreateService = async (req, res) => {
             isLikeHide,
             isCommentHide
         })
+        const user =await  User.findById(id)
+        user.post += 1;
+        await user.save()
+        // console.log("user ",uaer)
         return createdPost;
     } catch (error) {
         console.log("Error in postCreateService post.service.js ", error)

@@ -3,6 +3,7 @@ import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import Loader from '../components/Loader'
+import StoryLoader from '../components/StoryLoader';
 
 function Profile() {
     useEffect(() => { console.log("Profle") }, [])
@@ -11,14 +12,17 @@ function Profile() {
     const [activeTab, setActiveTab] = useState("post")
     const [reel, setReel] = useState([])
     const [post, setPost] = useState([])
+    const [userStatus, setUserStatus] = useState([])
     const [userDetails, setUserDetails] = useState('')
     const [isLoadingPost, setIsLoadingPost] = useState(false)
     const [isLoadingUserDetails, setIsLoadingUserDetails] = useState(false)
+    const [isStoryLoader, setIsStoryLoaded] = useState(false);
 
 
     const fetchRandomPosts = useCallback(async (type) => {
         setIsLoadingPost(true);
         setIsLoadingUserDetails(true)
+        setIsStoryLoaded(true)
         setActiveTab(type.toLowerCase());
 
         try {
@@ -27,11 +31,13 @@ function Profile() {
                 { postType: type },
                 { withCredentials: true }
             );
+
             if (type === "POST") {
                 setPost(response.data.data);
             } else if (type === "REEL") {
                 setReel(response.data.data);
             }
+            setIsLoadingPost(false);
 
             const responseUserDetails = await axios.get(
                 `${import.meta.env.VITE_BACKEND_URL}/user/getUserById`,
@@ -39,13 +45,16 @@ function Profile() {
             );
             // console.log("ff ", responseUserDetails.data.message)
             setUserDetails(responseUserDetails.data.message)
-            console.log("ff",responseUserDetails)
+            setIsLoadingUserDetails(false)
+            // console.log("ff", responseUserDetails)
+
+            const status = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/status/getStatus`, { withCredentials: true })
+            // console.log("dd ", status)
+            setUserStatus(status.data.message)
+            setIsStoryLoaded(false)
 
         } catch (error) {
-            console.error(`Error fetching ${type}:`, error);
-        } finally {
-            setIsLoadingPost(false);
-            setIsLoadingUserDetails(false)
+            console.error(`Error fetching :`, error);
         }
     }, []);
     const handlePost = (e) => {
@@ -107,11 +116,11 @@ function Profile() {
                                             <div className="text-sm" style={{ color: 'var(--text-color)' }}>posts</div>
                                         </div>
                                         <div className="text-center">
-                                            <div onClick={()=> navigate('/follower')} className="font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.followers}</div>
+                                            <div onClick={() => navigate('/follower')} className="font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.followers}</div>
                                             <div className="text-sm" style={{ color: 'var(--text-color)' }}>followers</div>
                                         </div>
                                         <div className="text-center">
-                                            <div onClick={()=> navigate('/following')} className="font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.following}</div>
+                                            <div onClick={() => navigate('/following')} className="font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.following}</div>
                                             <div className="text-sm" style={{ color: 'var(--text-color)' }}>following</div>
                                         </div>
                                     </div>
@@ -141,24 +150,55 @@ function Profile() {
 
                 {/* Action Buttons */}
 
+
                 {/* Highlights Stories */}
-                <div className="px-3 mb-3">
-                    <div className="flex space-x-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                        {['Travel', 'Work', 'Art', 'Food'].map((highlight, index) => (
-                            <div key={index} className="flex flex-col items-center space-y-1 flex-shrink-0">
-                                <div className="w-16 h-16 rounded-full p-0.5" style={{ background: 'linear-gradient(to right, var(--button-color), #2DD4BF)' }}>
-                                    <div className="w-full h-full rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-color)' }}>
-                                        <div className="w-14 h-14 rounded-full flex items-center justify-center text-sm font-medium"
-                                            style={{ backgroundColor: 'var(--semi-text-light-color)', color: 'var(--text-color)' }}>
-                                            {highlight.charAt(0)}
+                {
+                    isStoryLoader ?
+                        <StoryLoader
+                            screenheight='h-25'
+                            screenwidth='w-screen'
+                        />
+                        :
+
+                        <div className="px-3 mb-3 ">
+                            <div className="flex space-x-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+
+                                <div onClick={() => navigate("/upload-status")} className="flex flex-col items-center space-y-1 flex-shrink-0">
+                                    <div className="border-3 border-dashed border-[var(--button-color)] w-16 h-16 rounded-full p-0.5 " >
+                                        <div className="w-full h-full rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-color)' }}>
+                                            <div className="w-14 h-14 rounded-full flex items-center justify-center font-medium text-2xl"
+                                                style={{ backgroundColor: 'var(--semi-text-light-color)', color: 'var(--dark-color)' }}>
+                                                +
+                                            </div>
                                         </div>
                                     </div>
+                                    <span className="text-xs" style={{ color: 'var(--text-color)' }}>Add</span>
+
+
                                 </div>
-                                <span className="text-xs" style={{ color: 'var(--text-color)' }}>{highlight}</span>
+                                {userStatus.map((status, index) => (
+                                    <div key={status._id} className=" flex flex-col items-center space-y-1 flex-shrink-0">
+                                        <div onClick={() => navigate('/see-story', { state: { story: [status] } })} className="w-16 h-16 rounded-full p-0.5" style={{ background: 'linear-gradient(to right, var(--button-color), #2DD4BF)' }}>
+                                            <div
+                                                className="w-full h-full rounded-full flex items-center justify-center"
+                                                style={{ backgroundColor: 'var(--bg-color)' }}
+                                            >
+                                                <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center bg-gray-200">
+                                                    <img
+                                                        className="w-full h-full object-cover"
+                                                        src={status.image}
+                                                        alt="status"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <span className="text-xs capitalize" style={{ color: 'var(--text-color)' }}>{status.category.length > 8 ? status.category.slice(0, 8) + "..." : status.category}</span>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                </div>
+                        </div>
+                }
 
                 {/* Posts Grid */}
                 <div className="mb-4 ">
