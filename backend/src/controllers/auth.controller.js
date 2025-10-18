@@ -16,6 +16,11 @@ export const createUser = async (req, res) => {
 
         // Create user
         const savedUser = await createUserService(req, res);
+        if (savedUser.error) {
+            return res.status(500).json({
+                message : savedUser
+            })
+        }
 
         //create toke
         const token = jwt.sign(
@@ -23,7 +28,7 @@ export const createUser = async (req, res) => {
             process.env.JWT_SECRET_KEY,
             { expiresIn: '1d' }
         );
-        console.log("ppp ",savedUser)
+        // console.log("ppp ",savedUser)
 
 
         const option = {
@@ -39,7 +44,7 @@ export const createUser = async (req, res) => {
                 id: savedUser._id,
                 email: savedUser.email,
                 username: savedUser.username,
-                profile : savedUser.profile
+                profile: savedUser.profile
             }
         });
 
@@ -57,11 +62,11 @@ export const createUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
     try {
-        console.log("body => ",req)
+        console.log("body => ", req)
         const { email, password } = req.body;
 
         // Validation
-        if (!password && !email ) {
+        if (!password && !email) {
             return res.status(400).json({
                 error: true,
                 success: false,
@@ -71,6 +76,11 @@ export const loginUser = async (req, res) => {
 
         // Create user
         const savedUser = await logInService(req, res);
+        if (savedUser.error) {
+            return res.status(401).json({
+                message : savedUser
+            })
+        }
 
         //create toke
         const token = jwt.sign(
@@ -84,7 +94,7 @@ export const loginUser = async (req, res) => {
             // secure: true
         };
         // Return success response
-        return res.status(201).cookie('token', token, option).json({
+        return res.status(200).cookie('token', token, option).json({
             message: "User Login successfully",
             success: true,
             error: false,
@@ -109,14 +119,14 @@ export const loginUser = async (req, res) => {
 
 
 export const logout = async (req, res) => {
-    try{
+    try {
 
         res.status(200).clearCookie("token").json({
-            success:true,
-            error : false,
-            message :"logout successfully"
+            success: true,
+            error: false,
+            message: "logout successfully"
         })
-    }catch(err){
-        console.log("error in logout controller",err)
+    } catch (err) {
+        console.log("error in logout controller", err)
     }
 }

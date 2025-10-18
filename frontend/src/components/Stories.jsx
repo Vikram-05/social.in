@@ -33,9 +33,8 @@ function Stories() {
                         return res.data.message || [];
                     })
                 );
-
-                // Only keep users who have at least 1 status
-                setUserStory(storyData.filter((user) => user.length > 0));
+                // console.log("storyDa ",storyData)
+                setUserStory(storyData.filter((user) => user.status.length > 0));
             } catch (err) {
                 console.error('Error fetching user stories:', err);
             } finally {
@@ -76,17 +75,17 @@ function Stories() {
 
                     {/* Other Stories */}
                     {userStory.map((user) => (
-                        <div key={user[0]._id} className=" flex flex-col items-center space-y-1 flex-shrink-0">
+                        <div key={user.status[0]._id} className=" flex flex-col items-center space-y-1 flex-shrink-0">
                             <div onClick={() => navigate("/see-story", { state: { story: user } })
                             } className=" w-16 h-16 bg-gradient-to-r from-[var(--button-color)] to-[#2DD4BF] rounded-full p-0.5">
                                 <div className="w-full h-full bg-[var(--bg-color)] rounded-full flex items-center justify-center"
                                 >
                                     <div className="w-14 h-14 overflow-hidden bg-gray-500 rounded-full flex items-center justify-center text-lg">
-                                        <img className='h-full w-full object-cover' src={user[0].ststusByProfile} alt="" />
+                                        <img className='h-full w-full object-cover' src={user.userData.profile} alt="" />
                                     </div>
                                 </div>
                             </div>
-                            <span className="text-xs text-[var(--text-color)]">{user[0].ststusByFullName.length > 10 ? user[0].ststusByFullName.slice(0, 10) + "..." : user[0].ststusByFullName}</span>
+                            <span className="text-xs text-[var(--text-color)]">{user.userData.fullName.length > 10 ? user.userData.fullName.slice(0, 10) + "..." : user.userData.fullName}</span>
                         </div>
                     ))}
                 </div>

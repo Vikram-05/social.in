@@ -25,13 +25,35 @@ function Search() {
         try {
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/getUserByUsername/${quary}`, { withCredentials: true })
 
-            // console.log(response.data.message)
+            console.log(response.data.message)
             setSuggestedUsers(response.data.message)
         } catch (error) {
             console.log("Error in handleSearchByUsername  ", error)
 
         }
     }
+
+    const handleFollowToggle = async (userId) => {
+        try {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/follow/follow-unfollow`, {
+                followTo: userId
+            }, {
+                withCredentials: true
+            });
+
+            
+            setSuggestedUsers(prev =>
+                prev.map(user =>
+                    user.user._id === userId
+                        ? { ...user, isFollow: !user.isFollow }
+                        : user
+                )
+            );
+        } catch (error) {
+            console.error("Failed to toggle follow:", error);
+        }
+    };
+
 
 
 
@@ -91,24 +113,31 @@ function Search() {
                                 <div className="mb-8">
                                     <div className="space-y-3">
                                         {suggestedUsers.map((user) => (
-                                            <div key={user._id} onClick={() => navigate(`/search-profile/${user.username}`)} className="flex items-center justify-between p-3">
+                                            <div key={user.user._id} onClick={() => navigate(`/search-profile/${user.user.username}`)} className="flex items-center justify-between p-3">
                                                 <div className="flex items-center space-x-3">
                                                     <div className="w-12 h-12 rounded-full overflow-hidden">
                                                         <img
-                                                            src={user.profile}
-                                                            alt={user.name}
+                                                            src={user.user.profile}
+                                                            alt={user.user.name}
                                                             className="w-full h-full object-cover"
                                                         />
-                                                    </div> 
+                                                    </div>
                                                     <div>
-                                                        <div className="font-semibold" style={{ color: 'var(--text-color)' }}>{user.fullName}</div>
-                                                        <div className="text-sm" style={{ color: 'var(--semi-text-color)' }}>{user.username}</div>
+                                                        <div className="font-semibold" style={{ color: 'var(--text-color)' }}>{user.user.fullName}</div>
+                                                        <div className="text-sm" style={{ color: 'var(--semi-text-color)' }}>{user.user.username}</div>
                                                     </div>
                                                 </div>
-                                                <button className="px-4 py-1 rounded text-sm font-medium"
-                                                    style={{ backgroundColor: 'var(--button-color)', color: 'var(--bg-color)' }}>
-                                                    Follow
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleFollowToggle(user.user._id);
+                                                    }}
+                                                    className="px-4 py-1 rounded text-sm font-medium"
+                                                    style={{ backgroundColor: 'var(--button-color)', color: 'var(--bg-color)' }}
+                                                >
+                                                    {user.isFollow ? "Unfollow" : "Follow"}
                                                 </button>
+
                                             </div>
                                         ))}
                                     </div>
@@ -129,7 +158,7 @@ function Search() {
                                 {categories.map((category, index) => (
                                     <div
                                         key={index}
-                                        onClick={()=> navigate(`/search/category/${category.name}`)}
+                                        onClick={() => navigate(`/search/category/${category.name}`)}
                                         className=" aspect-square rounded-lg flex flex-col items-center justify-center p-2 text-center"
                                         style={{ backgroundColor: 'var(--semi-text-light-color)' }}
                                     >

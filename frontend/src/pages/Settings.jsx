@@ -61,6 +61,7 @@ const Settings = () => {
   const handleLogout = async () => {
     try {
       await axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`, { withCredentials: true })
+      localStorage.removeItem("id")
       navigate("/login")
     } catch (error) {
       console.log("Error while logout", error)

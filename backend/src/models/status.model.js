@@ -8,15 +8,6 @@ const statusSchema = mongoose.Schema({
         ref: 'User',
         required: true
     },
-    ststusByFullName : {
-        type : String
-    },
-    ststusByUsername : {
-        type : String
-    },
-    ststusByProfile : {
-        type : String
-    },
     image: {
         type: String,
         required: true
@@ -30,7 +21,7 @@ const statusSchema = mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-        index: { expires: 60 * 60 * 24 } // 24 hours
+        index: { expires: 60 * 60 * 24 } 
     }
 });
 

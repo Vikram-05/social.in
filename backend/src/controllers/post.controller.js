@@ -1,35 +1,47 @@
-import { postCreateService, getrandomPostForhomePage,getrandomUserPostForhomePage,getrandomPostByCategory,getrandomUserPostByIdForhomePage } from "../services/post.service.js";
+import { postCreateService, getrandomPostForhomePage, getrandomUserPostForhomePage, getrandomPostByCategory, getrandomUserPostByIdForhomePage } from "../services/post.service.js";
 
 
 export const createPost = async (req, res) => {
-    const {postType} = req.body;
+    const { postType } = req.body;
 
-    if (!postType ) {
-        return res.status(500).json({ success: false, error: true, message: "All fields required" })
-    }
+    // if (!postType) {
+    //     return res.status(500).json({ success: false, error: true, message: "All fields required" })
+    // }
 
     const createdPost = await postCreateService(req, res);
     return res.status(201)
         .json({
-            success : true,
-            error : false,
-            data : createdPost
+            success: true,
+            error: false,
+            data: createdPost
         })
 
 }
 
 
 export const getPosts = async (req, res) => {
+    const { id } = req.user;
+    const { postType, page, limit } = req.body;
 
-    const getRandomPostForHome = await getrandomPostForhomePage(req, res);
-    return res.status(201)
-        .json({
-            success: true,
-            error: false,
-            data: getRandomPostForHome
-        })
+    const result = await getrandomPostForhomePage(id, postType, page, limit);
+    console.log("REs",result)
 
-}
+    if (!result.success) {
+        return res.status(500).json({
+            success: false,
+            error: true,
+            message: "Server error",
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        error: false,
+        data: result.posts,
+        hasMore: result.hasMore,
+    });
+};
+
 
 export const getPostsByCategory = async (req, res) => {
 
@@ -59,7 +71,7 @@ export const getUserPosts = async (req, res) => {
 
 
 export const getUserPostsById = async (req, res) => {
-    const {id} = req.body;
+    const { id } = req.body;
     // console.log("pp",id)
     const getRandomPostForHome = await getrandomUserPostByIdForhomePage(req, res);
     return res.status(201)

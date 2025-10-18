@@ -178,7 +178,7 @@ function Profile() {
                                 </div>
                                 {userStatus.map((status, index) => (
                                     <div key={status._id} className=" flex flex-col items-center space-y-1 flex-shrink-0">
-                                        <div onClick={() => navigate('/see-story', { state: { story: [status] } })} className="w-16 h-16 rounded-full p-0.5" style={{ background: 'linear-gradient(to right, var(--button-color), #2DD4BF)' }}>
+                                        <div onClick={() => navigate('/see-story', { state: { story: {status : Array(status),userData : userDetails } } })} className="w-16 h-16 rounded-full p-0.5" style={{ background: 'linear-gradient(to right, var(--button-color), #2DD4BF)' }}>
                                             <div
                                                 className="w-full h-full rounded-full flex items-center justify-center"
                                                 style={{ backgroundColor: 'var(--bg-color)' }}

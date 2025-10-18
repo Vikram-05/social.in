@@ -6,16 +6,26 @@ function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [error, setError] = useState(false)
 
     const handleLogin = async (e) => {
         e.preventDefault()
-        console.log("email : ", email, " password : ", password)
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`,
-            { email, password },
-            { withCredentials: true }
-        )
-        console.log("res login ", response.data);
-        navigate("/")
+        try {
+            // console.log("email : ", email, " password : ", password)
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`,
+                { email, password },
+                { withCredentials: true }
+            )
+            if (response.status == 200) {
+                navigate("/")
+                localStorage.setItem("id",response.data.data.id)
+                // console.log("d",response.data.data.id)
+                // console.log("d",response)
+            }
+        } catch (error) {
+            // console.log("res login ", error.response.data.message.message);
+            setError(error.response.data.message.message || error.response.data.message)
+        }
 
     }
 
@@ -32,6 +42,12 @@ function Login() {
                 {/* Form */}
                 <form className="w-full flex flex-col gap-5">
                     <div>
+                        {error &&
+                            <p className="text-red-600 text-sm mt-1 mb-3 italic">
+                                * {error}
+                            </p>
+
+                        }
                         <label htmlFor="username" className="block text-sm font-medium text-[var(--semi-text-color)] mb-2">
                             Username or Email
                         </label>

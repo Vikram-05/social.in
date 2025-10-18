@@ -1,3 +1,4 @@
+import { error } from "console";
 import { Status } from "../models/status.model.js";
 import { User } from "../models/user.model.js";
 import { uploadImage } from "./cloudinary.service.js";
@@ -16,7 +17,10 @@ export const getStatusByIdService = async (req, res) => {
     const { id } = req.body;
     try {
         const statusResponse = await Status.find({'statusBy' : id})
-        return statusResponse
+        const userData = await User.findById(id)
+        const a = {...statusResponse,...userData}
+        console.log("stroy ",a)
+        return {status : statusResponse,userData :userData}
     } catch (error) {
         console.log("Error in uploadstatus service", error)
         return null
@@ -36,13 +40,30 @@ export const uploadStatusService = async (req, res) => {
             'image': uploadedimage.secure_url,
             'caption': caption || "",
             "category" : category || "",
-            "ststusByProfile" : isUserExist.profile,
-            "ststusByUsername" : isUserExist.username,
-            "ststusByFullName" : isUserExist.fullName
         })
         return statusResponse
     } catch (error) {
         console.log("Error in uploadstatus service", error)
+        return null
+    }
+}
+export const deleteStatusService = async (req, res) => {
+    const { id } = req.user;
+    const { storyId } = req.body
+    try {
+        const isStoryExist = await Status.findById(storyId)
+        if(!isStoryExist) {
+            return null;
+        }
+        if(id != isStoryExist.statusBy){
+            return {success : false,error : true, message : "Not valid user"}
+        }
+        const deletedResponse = await Status.deleteOne({"_id" : storyId})
+        // console.log('de ',deletedResponse)
+        // console.log('ff ',id == isStoryExist.statusBy)
+        return {success : true,error : false , message :deletedResponse }
+    } catch (error) {
+        console.log("Error in deleted status service", error)
         return null
     }
 }

@@ -15,16 +15,14 @@ export const increaseLike = async (req, res) => {
         }
 
         const updated = await increaseLikeService(req, res);
-        if (!updated) {
+        if (!updated.success) {
             return res.status(401).json({
                 error: true,
                 success: false,
                 message: "Error while like"
             })
         }
-        return res.status(401).json({
-            error: false,
-            success: true,
+        return res.status(200).json({
             message: updated
         })
     } catch (error) {

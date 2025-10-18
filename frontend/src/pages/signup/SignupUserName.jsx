@@ -9,6 +9,7 @@ const SignupUserName = () => {
     const { signupData, setSignupData } = useSignup();
     const [username, setUserName] = useState("");
     const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState(false)
 
 
 
@@ -18,12 +19,14 @@ const SignupUserName = () => {
         setSignupData({ ...signupData, username });
         console.log("signup data", signupData)
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, {...signupData,username}, { withCredentials: true })
-            console.log("data signup -> ", response.data)
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, { ...signupData, username }, { withCredentials: true })
+            // console.log("data signup -> ", response.data)
 
             navigate('/')
+            localStorage.setItem('id',response.data.data.id)
         } catch (error) {
             console.log("Error in signup", error)
+            setError(error.response.data.message?.message || error.response.data.message    )
         } finally {
             setIsLoading(false)
         }
@@ -41,6 +44,12 @@ const SignupUserName = () => {
 
                 {/* Form */}
                 <form className="w-full flex flex-col gap-5">
+                    {error &&
+                        <p className="text-red-600 text-sm mt-1 mb-3 italic">
+                            * {error}
+                        </p>
+
+                    }
 
                     <div>
                         <label htmlFor="text" className="block text-sm font-medium text-[var(--semi-text-color)] mb-2">

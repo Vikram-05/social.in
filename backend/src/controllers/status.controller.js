@@ -1,4 +1,4 @@
-import { uploadStatusService,getStatusService,getStatusByIdService } from '../services/status.service.js'
+import { uploadStatusService,getStatusService,getStatusByIdService ,deleteStatusService} from '../services/status.service.js'
 
 export const getStatus = async (req, res) => {
     try {
@@ -68,6 +68,29 @@ export const uploadStatus = async (req, res) => {
     }
     catch (error) {
         console.log("Error in uploadstatus controller", error)
+        res.status(500).json({
+            error: true,
+            success: false,
+            message: error
+        })
+    }
+}
+export const deleteStory = async (req, res) => {
+    try {
+        const response = await deleteStatusService(req, res);
+        if (response.error) {
+            res.status(400).json({
+                message : response
+            })
+        }
+        res.status(200).json({
+            error: false,
+            success: true,
+            message: response
+        })
+    }
+    catch (error) {
+        console.log("Error in delete controller", error)
         res.status(500).json({
             error: true,
             success: false,

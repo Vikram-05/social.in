@@ -9,7 +9,7 @@ export const increaseLikeService = async (req, res) => {
         // Find the post
         const postData = await Post.findById(postOn);
         if (!postData) {
-            return res.status(404).json({ success: false, message: "Post not found" });
+            return { success: false, message: "Post not found" };
         }
 
         // Find the like document
@@ -39,11 +39,11 @@ export const increaseLikeService = async (req, res) => {
             await postData.save();
         }
 
-        return res.status(200).json({
+        return {
             success: true,
             liked: likeDoc.likedBy.includes(id),
             totalLikes: postData.postLikeCount,
-        });
+        };
     } catch (error) {
         console.error("Error in increaseLikeService:", error);
         return res.status(500).json({

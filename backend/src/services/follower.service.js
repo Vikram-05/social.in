@@ -8,6 +8,17 @@ export const getFollowerService = async (req, res) => {
         return response;
     } catch (error) {
         console.log("Error in getFollowerService", error)
+        throw error
+        
+    }
+}
+export const getFollowerByIdService = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const response = await Follow.findOne({ 'user': id })
+        return response;
+    } catch (error) {
+        console.log("Error in getFollowerService", error)
         return null
     }
 }

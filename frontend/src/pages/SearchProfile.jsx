@@ -7,6 +7,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
 import Loader from '../components/Loader'
 import { FaChevronLeft } from "react-icons/fa";
+import StoryLoader from '../components/StoryLoader';
+
 
 function SearchProfile() {
     useEffect(() => { console.log("Profle") }, [])
@@ -20,11 +22,17 @@ function SearchProfile() {
     const [isLoadingPost, setIsLoadingPost] = useState(false)
     const [isLoadingUserDetails, setIsLoadingUserDetails] = useState(false)
     const [isFollow, setIsfollow] = useState(false)
+    const [isStoryLoader, setIsStoryLoaded] = useState(false);
+    const [userStatus, setUserStatus] = useState([])
+    const [userData,setUserData ] = useState()
+    
+
 
 
     const fetchRandomPosts = useCallback(async (type) => {
         setIsLoadingPost(true);
         setIsLoadingUserDetails(true)
+        setIsStoryLoaded(true)
         setActiveTab(type.toLowerCase());
 
         try {
@@ -34,12 +42,12 @@ function SearchProfile() {
                 `${import.meta.env.VITE_BACKEND_URL}/user/getUserByUsername/${username}`,
                 { withCredentials: true }
             );
-            setUserDetails(responseUserDetails.data.message[0])
-            // console.log("ff ",  responseUserDetails.data.message[0]._id)
+            setUserDetails(responseUserDetails.data.message[0].user)
+            // console.log("ff ",  responseUserDetails.data.message[0].user)
 
             const response = await axios.post(
                 `${import.meta.env.VITE_BACKEND_URL}/post/get-random-post-use-related-byId`,
-                { 'id': responseUserDetails.data.message[0]._id, 'postType': type, },
+                { 'id': responseUserDetails.data.message[0].user._id, 'postType': type, },
                 { withCredentials: true }
             );
             // console.log("res",response)
@@ -48,12 +56,19 @@ function SearchProfile() {
             } else if (type === "REEL") {
                 setReel(response.data.data);
             }
-
-            const isFollowOrNot = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/follow/isFollow/${responseUserDetails.data.message[0]._id}`, {
+            
+            const isFollowOrNot = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/follow/isFollow/${responseUserDetails.data.message[0].user._id}`, {
                 withCredentials: true
             })
             setIsfollow(isFollowOrNot.data.message)
-            console.log("ff ", isFollowOrNot)
+            // console.log("ff ", isFollowOrNot)
+            
+            const status = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/status/getStatusById`, { "id": responseUserDetails.data.message[0].user._id }, { withCredentials: true })
+            setUserStatus(status.data.message.status)
+            setUserData(status.data.message.userData)
+            setIsStoryLoaded(false)
+            console.log("us",status.data.message.userData)
+            
 
 
         } catch (error) {
@@ -115,9 +130,14 @@ function SearchProfile() {
                             borderColor="border-[var(--button-color)]" />
                         :
                         <>
-                            <div className=" px-3 font-semibold mb-4  text-center flex items-center justify-start gap-4" style={{ color: 'var(--text-color)' }}>
-                                <FaChevronLeft onClick={() => navigate(-1)} className='text-xl ' />
-                                <h1 className='text-xl mb-2'>{userDetails.fullName}</h1>
+                            <div className=" px-3 font-semibold mb-4  text-center flex items-center justify-between gap-4 " style={{ color: 'var(--text-color) ' }}>
+                                <div className='flex items-center justify-center gap-3'><FaChevronLeft onClick={() => navigate(-1)} className='text-xl ' />
+                                <h1 className='text-xl mb-2'>{userDetails.fullName}</h1></div>
+                                <button onClick={() => navigate("/setting")} style={{ color: 'var(--text-color)' }}>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                                    </svg>
+                                </button>
                             </div>
                             {/* Profile Header */}
                             <div className="px-3 flex items-start space-x-6 mb-2">
@@ -137,11 +157,7 @@ function SearchProfile() {
                                     <div className="flex items-center justify-between mb-4">
                                         <h1 className="text-md font-semibold" style={{ color: 'var(--semi-text-color)' }}>{userDetails.username}</h1>
 
-                                        <button onClick={() => navigate("/setting")} style={{ color: 'var(--text-color)' }}>
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-                                            </svg>
-                                        </button>
+
                                     </div>
 
                                     {/* Stats */}
@@ -151,10 +167,15 @@ function SearchProfile() {
                                             <div className="text-sm" style={{ color: 'var(--text-color)' }}>posts</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.followers}</div>
+                                            <div
+                                                onClick={() => navigate('/follower', { state: { id: userDetails._id } })}
+                                                className="font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.followers}</div>
                                             <div className="text-sm" style={{ color: 'var(--text-color)' }}>followers</div>
                                         </div>
-                                        <div className="text-center">
+
+                                        <div
+                                            onClick={() => navigate('/following', { state: { id: userDetails._id } })}
+                                            className="text-center">
                                             <div className="font-semibold" style={{ color: 'var(--text-color)' }}>{userDetails.following}</div>
                                             <div className="text-sm" style={{ color: 'var(--text-color)' }}>following</div>
                                         </div>
@@ -187,23 +208,53 @@ function SearchProfile() {
                 </div>
 
                 {/* Highlights Stories */}
-                <div className="px-3 mb-3">
-                    <div className="flex space-x-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                        {['Travel', 'Work', 'Art', 'Food'].map((highlight, index) => (
-                            <div key={index} className="flex flex-col items-center space-y-1 flex-shrink-0">
-                                <div className="w-16 h-16 rounded-full p-0.5" style={{ background: 'linear-gradient(to right, var(--button-color), #2DD4BF)' }}>
-                                    <div className="w-full h-full rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-color)' }}>
-                                        <div className="w-14 h-14 rounded-full flex items-center justify-center text-sm font-medium"
-                                            style={{ backgroundColor: 'var(--semi-text-light-color)', color: 'var(--text-color)' }}>
-                                            {highlight.charAt(0)}
+                {
+                    isStoryLoader ?
+                        <StoryLoader
+                            screenheight='h-25'
+                            screenwidth='w-screen'
+                        />
+                        :
+
+                        <div className="px-3 mb-3 ">
+                            <div className="flex space-x-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+
+                                <div onClick={() => navigate("/upload-status")} className="flex flex-col items-center space-y-1 flex-shrink-0">
+                                    <div className="border-3 border-dashed border-[var(--button-color)] w-16 h-16 rounded-full p-0.5 " >
+                                        <div className="w-full h-full rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-color)' }}>
+                                            <div className="w-14 h-14 rounded-full flex items-center justify-center font-medium text-2xl"
+                                                style={{ backgroundColor: 'var(--semi-text-light-color)', color: 'var(--dark-color)' }}>
+                                                +
+                                            </div>
                                         </div>
                                     </div>
+                                    <span className="text-xs" style={{ color: 'var(--text-color)' }}>Add</span>
+
+
                                 </div>
-                                <span className="text-xs" style={{ color: 'var(--text-color)' }}>{highlight}</span>
+                                {userStatus.map((status, index) => (
+                                    <div key={status._id} className=" flex flex-col items-center space-y-1 flex-shrink-0">
+                                        <div onClick={() => navigate('/see-story', { state: { story: { status :Array(status), userData }} })} className="w-16 h-16 rounded-full p-0.5" style={{ background: 'linear-gradient(to right, var(--button-color), #2DD4BF)' }}>
+                                            <div
+                                                className="w-full h-full rounded-full flex items-center justify-center"
+                                                style={{ backgroundColor: 'var(--bg-color)' }}
+                                            >
+                                                <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center bg-gray-200">
+                                                    <img
+                                                        className="w-full h-full object-cover"
+                                                        src={status.image}
+                                                        alt="status"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <span className="text-xs capitalize" style={{ color: 'var(--text-color)' }}>{status.category.length > 8 ? status.category.slice(0, 8) + "..." : status.category}</span>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                </div>
+                        </div>
+                }
 
                 {/* Posts Grid */}
                 <div className="mb-4 ">
@@ -243,7 +294,7 @@ function SearchProfile() {
                             width="w-7"
                             border="border-3"
                             borderColor="border-[var(--button-color)]" /> :
-                        <div className="grid grid-cols-3 gap-1 pb-20">
+                        <div className="grid grid-cols-3  pb-20">
                             {
                                 activeTab == "post" ?
                                     (

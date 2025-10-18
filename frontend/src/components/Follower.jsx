@@ -4,11 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { FaChevronLeft } from "react-icons/fa";
 import Loader from './Loader';
 import Footer from './Footer';
+import { useLocation } from 'react-router-dom';
 
 const Follower = () => {
     const navigate = useNavigate()
     const [followers, setFollowers] = useState([]);
     const [isLoading, setisloading] = useState(false)
+    const location = useLocation()
+    const  id  = location?.state?.id;
 
     // const handleFollow = (index) => {
     //     setFollowers(prev =>
@@ -49,8 +52,44 @@ const Follower = () => {
                 setisloading(false)
             }
         };
+        const handleGetFollower2 = async () => {
+            try {
+                const res = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URL}/follow/get-follwerById/${id}`,
+                    { withCredentials: true }
+                );
+                console.log("ff",res)
 
-        handleGetFollower();
+                const followerIds = res.data.message?.follower || [];
+
+                // Use Promise.all to fetch all follower details in parallel
+                const userDetailsResponses = await Promise.all(
+                    followerIds.map((userId) =>
+                        axios.get(
+                            `${import.meta.env.VITE_BACKEND_URL}/user/getUserByUserId/${userId}`,
+                            { withCredentials: true }
+                        )
+                    )
+                );
+
+                const userDetails = userDetailsResponses.map((res) => res.data.message);
+                setFollowers(userDetails);
+
+            } catch (error) {
+                console.error("Error in follower.jsx", error);
+            } finally {
+                setisloading(false)
+            }
+        };
+        if (id) {
+            console.log("a")
+            handleGetFollower2()
+        }
+        else {
+            console.log("b")
+
+            handleGetFollower();
+        }
     }, []);
 
     return (
@@ -73,40 +112,40 @@ const Follower = () => {
                     <>
                         <div className="space-y-4">
                             {!followers.length > 0 ?
-                            <p className='text-[var(--semi-text-color)]  h-[calc(100vh-100px)]  flex items-center justify-center '>No Follower</p>:
+                                <p className='text-[var(--semi-text-color)]  h-[calc(100vh-100px)]  flex items-center justify-center '>No Follower</p> :
 
-                            followers.map((follower, index) => (
-                                <div
-                                    onClick={() => navigate(`/search-profile/${follower.username}`)}
-                                    key={follower._id}
-                                    className="flex items-center justify-between"
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        {/* Avatar with initials */}
-                                        <div
-                                            className="overflow-hidden border-1 border-gray-400 relative w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold uppercase"
-                                            style={{
-                                                backgroundColor: 'var(--main-color)',
-                                                color: 'var(--text-secondry-color)'
-                                            }}
-                                        >
-                                            <img className='w-full h-full' src={follower.profile} alt="p" />
+                                followers.map((follower, index) => (
+                                    <div
+                                        onClick={() => navigate(`/search-profile/${follower.username}`)}
+                                        key={follower._id}
+                                        className="flex items-center justify-between"
+                                    >
+                                        <div className="flex items-center space-x-3">
+                                            {/* Avatar with initials */}
+                                            <div
+                                                className="overflow-hidden border-1 border-gray-400 relative w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold uppercase"
+                                                style={{
+                                                    backgroundColor: 'var(--main-color)',
+                                                    color: 'var(--text-secondry-color)'
+                                                }}
+                                            >
+                                                <img className='w-full h-full' src={follower.profile} alt="p" />
 
-                                        </div>
+                                            </div>
 
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-semibold" style={{ color: 'var(--text-color)' }}>
-                                                {follower.fullName}
-                                            </span>
-                                            {follower.username && (
-                                                <span className="text-xs" style={{ color: 'var(--semi-text-color)' }}>
-                                                    {follower.username}
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-semibold" style={{ color: 'var(--text-color)' }}>
+                                                    {follower.fullName}
                                                 </span>
-                                            )}
+                                                {follower.username && (
+                                                    <span className="text-xs" style={{ color: 'var(--semi-text-color)' }}>
+                                                        {follower.username}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    {/* <button
+                                        {/* <button
                             onClick={() => handleFollow(index)}
                             className="text-xs font-medium px-4 py-1.5 rounded-md transition"
                             style={{
@@ -116,8 +155,8 @@ const Follower = () => {
                         >
                             {follower.following ? 'Following' : 'Follow'}
                         </button> */}
-                                </div>
-                            ))}
+                                    </div>
+                                ))}
                         </div>
                     </>
             }

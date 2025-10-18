@@ -4,11 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { FaChevronLeft } from "react-icons/fa";
 import Loader from './Loader';
 import Footer from './Footer';
+import { useLocation } from 'react-router-dom';
 
 const Following = () => {
+    const location = useLocation()
     const navigate = useNavigate()
     const [following, setFollowing] = useState([]);
     const [isLoading, setisloading] = useState(false)
+    const id = location?.state?.id
+    // console.log("id",id)
 
     // const handleFollow = (index) => {
     //     setfollowing(prev =>
@@ -49,8 +53,36 @@ const Following = () => {
                 setisloading(false)
             }
         };
+        const handleGetFollower2 = async () => {
+            try {
+                const res = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URL}/follow/get-follwerById/${id}`,
+                    { withCredentials: true }
+                );
 
-        handleGetFollower();
+                const followerIds = res.data.message?.following || [];
+
+                // Use Promise.all to fetch all follower details in parallel
+                const userDetailsResponses = await Promise.all(
+                    followerIds.map((userId) =>
+                        axios.get(
+                            `${import.meta.env.VITE_BACKEND_URL}/user/getUserByUserId/${userId}`,
+                            { withCredentials: true }
+                        )
+                    )
+                );
+
+                const userDetails = userDetailsResponses.map((res) => res.data.message);
+                setFollowing(userDetails);
+
+            } catch (error) {
+                console.error("Error in follower.jsx", error);
+            } finally {
+                setisloading(false)
+            }
+        };
+        if(id) handleGetFollower2()
+        else handleGetFollower();
     }, []);
 
     return (

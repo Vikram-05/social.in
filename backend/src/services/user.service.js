@@ -23,8 +23,18 @@ export const getUserByIdService = async (req, res) => {
 export const getUserByUsernameService = async (req, res) => {
     try {
         const {username} = req.params
-        const userDetails = await User.find({ username :{ $regex: username, $options: 'i' }});
-        return userDetails;
+        const {id} = req.user;
+        const AllUser = await User.find({ username :{ $regex: username, $options: 'i' }});
+        const userDetailsFollow =await Follow.findOne({"user" : id}) 
+        // console.log(`All `,AllUser)
+        let newUserData= []
+        AllUser.map((user) => {
+            const isInclude = userDetailsFollow.following.includes(user._id)
+            // console.log(`user  `,{user,"isFollow": isInclude})
+            newUserData.push({user,"isFollow": isInclude})
+        })
+        // console.log(`user  `,newUserData)
+        return newUserData;
     } catch (error) {
         console.log("error in getUserByIdService in user service.js ",error)
     }
@@ -44,6 +54,7 @@ export const updateUserProfileService = async (req, res) => {
         const { id } = req.user;
         const {username,bio,email,fullName} = req.body; 
         const uploadedImage = await uploadImage(req.file?.path)
+        // const 
         // console.log("uploaded => ",uploadedImage)
         const userDetails = await User.updateOne({ "_id" : id },{
             username,
